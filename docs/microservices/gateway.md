@@ -108,4 +108,5 @@ To connect API Management to a Kubernetes cluster in Azure:
 
 Consider combining API Management with a reverse proxy, whether Nginx, HAProxy, or Azure Application Gateway. For information about using API Management with Application Gateway, see [Integrate API Management in an internal VNET with Application Gateway](/azure/api-management/api-management-howto-integrate-internal-vnet-appgateway).
 
-
+> [!div class="nextstepaction"]
+> [Logging and monitoring](./logging-monitoring.md)

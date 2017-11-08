@@ -1,29 +1,34 @@
 # Designing microservices: Continuous integration
 
-Continuous integration and continuous deployment (CI/CD) are a key requirement for achieving success with microservices. Without a good CI/CD process, you will not achieve the agility that microservices promise. This section describes some of the challenges of CI/CD for microservices (multiple code bases, heterogenous build environments), along with a suggested approach.
+Continuous integration and continuous delivery (CI/CD) are a key requirement for achieving success with microservices. Without a good CI/CD process, you will not achieve the agility that microservices promise. This section describes some of the challenges of CI/CD for microservices (multiple code bases, heterogenous build environments), along with a suggested approach.
 
 ![](./images/ci-cd.png)
 
-One of the big reasons to adopt a microservices architecture is to enable faster release cycles, and the CI/CD process is critical to making that possible. If the team building service "A" wants to release an update, they should not be held up because changes to service "B" are waiting to be merged, tested, and deployed. There should not be a long release train where every team has to get in line.
+Faster release cycles are one of the biggest reasons to adopt a microservices architecture. 
 
-The release pipeline must be automated and highly reliable, so that the risks of deploying updates are minimized. If you are releasing to production daily or multiple times a day, regressions or service disruptions must be very rare. At the same time, if a bad update does get deployed, you must have a reliable way to quickly roll back to a previous version of a service.
+In a purely monolithic application, there is a single build pipeline whose output is the application executable. All development work feeds into this pipeline. If a high-priority bug is found, a fix must be integrated, tested, and published, which can delay the release of new features. It's true that you can mitigate these problems by having well-factored modules and using feature branches to minimize the impact of code changes. But as the application grows more complex, and more features are added, the release process for a monolith tends to become more brittle and likely to break. 
+
+Following the microservices philosophy, there should never be a long release train where every team has to get in line. The team that builds service "A" can release an update at any time, without waiting for changes in service "B" to be merged, tested, and deployed. The CI/CD process is critical to making this possible. Your release pipeline must be automated and highly reliable, so that the risks of deploying updates are minimized. If you are releasing to production daily or multiple times a day, regressions or service disruptions must be very rare. At the same time, if a bad update does get deployed, you must have a reliable way to quickly roll back or roll forward to a previous version of a service.
+
+![](./images/cicd-monolith.png)
 
 When we talk about CI/CD, we are really talking about several related processes: Continuous integration, continuous delivery, and continuous deployment.
 
 - Continuous integration means that code changes are frequently merged into the main branch, using automated build and test processes to ensure that  code in the main branch is always production-quality.
+
 - Continuous delivery means that code changes that pass the CI process are automatically published to a production-like environment. Deployment into the live production environment may require manual approval, but is otherwise automated. The goal is that your code should always be *ready* to deploy into production.
+
 - Continuous deployment means that code changes that pass the CI/CD process are automatically deployed into production.
 
-In the context of Kubernetes and microservices, CI applies to building the container images. Deployment is then a matter of pushing those images to a container registry, and then updating the Kubernetes deployment to pick up the latest images. 
-
+In the context of Kubernetes and microservices, the CI stage is concerned with building and testing container images, and pushing those images to a container registry. In the deployment stage, pod specs are updated to pick up the latest production image.
 
 ## Challenges
 
-- **No shared code base**. Each team is responsible for building its own service. In some organizations, teams may even use separate code repositories. Knowledge of how to build the entire system is therefore spread across teams.
+- **Many small independent code bases**. Each team is responsible for building its own service, with its own build pipeline. In some organizations, teams may use separate code repositories. This could lead to a situation where the knowledge of how to build the system is spread across teams, and nobody in the organization knows how to deploy the entire application. For example, what happens in a disaster recovery scenario, if you need to quickly deploy to a new cluster?   
 
 - **Multiple languages and frameworks**. With each team using its own mix of technologies, it can be difficult to create a single build process that works across the organization. The build process must be flexible enough that every team can adapt it for their choice of language or framework. 
 
-- **Integration testing**. Before any update is deployed to production, you should run integration tests a production-like environment with other live services. Running a full production cluster can be expensive, so it's unlikely that every team will be able to run its own full cluster just for testing. 
+- **Integration and load testing**. With teams releasing updates at their own pace, it can be challenging to design robust end-to-end testing, especially when services have dependencies on other services. Moreover, running a full production cluster can be expensive, so it's unlikely that every team will be able to run its own full cluster at production scales, just for testing. 
 
 - **Release management**. Every team should have the ability to deploy an update to production. That doesn't mean that every team member has permissions to do so. But having a centralized Release Manager role can reduce the velocity of deployments. The more that your CI/CD process is automated and reliable, the less there should be a need for a central authority. That said, you might have different policies for releasing major feature updates versus minor bug fixes. Being decentralized does not mean there should be zero governance.
 
@@ -44,10 +49,11 @@ For local development and testing, use Docker to run the service inside a contai
 When the code is ready, open a PR and merge into master. This will start a job on build server:
 
 1. Build the code assets. 
-2. Run unit tests.
+2. Run unit tests against the code.
 3. Build the container image.
-4. Push the image to a container registry.
-5. Update the test cluster with the new image to run integration tests.
+4. Test the container image by running functional tests on a running container. This step can catch errors in the Docker file, such as a bad entrypoint.
+5. Push the image to a container registry.
+6. Update the test cluster with the new image to run integration tests.
 
 When the image is ready to go into production, update the deployment files as needed to specify the latest image. This includes Kubernetes configuration files, Helm charts, and so on. Then apply the update to the production cluster.
 
@@ -67,7 +73,7 @@ In a rolling update, you deploy new instances of a service, and the new instance
 
 Rolling updates are the default behavior in Kubernetes when you update the pod spec for a Deployment. The Deployment controller creates a new ReplicaSet for the updated pods. Then it scales up the new ReplicaSet while scaling down the old one, to maintain the desired replica count. It doesn't delete old pods until the new ones are ready. Kubernetes keeps a history of the update, so you can use kubectl to roll back an update if needed. 
 
-If your service performs a long startup task, you can define a readiness probe. The readiness probe reports when the container is ready to start receiving traffic. Kubernete won't send traffic to the pod until the probe reports success. 
+If your service performs a long startup task, you can define a readiness probe. The readiness probe reports when the container is ready to start receiving traffic. Kubernetes won't send traffic to the pod until the probe reports success. 
 
 One challenge of rolling updates is that during the update process, a mix of old and new versions are running and receiving traffic. During this period, any request could get routed to either of the two versions. That may or may not cause problems, depending on the scope of the changes between the two versions. 
 
@@ -85,7 +91,7 @@ An advantage of blue-green deployments is that the service switches all the pods
 
 In a canary release, you roll out an updated version to a small number of clients. Then you monitor the behavior of the new service before rolling it out to all clients. This lets you do a slow rollout in a controlled fashion, observe real data, and spot problems before all customers are affected.
 
-A canary release is more complex to manage than either blue-green or rolling update, becayuse you must dynamically route requests to different versions of the service. In Kubernetes, you can configure a Service to span two replica sets (one for each version) and adjust the replica counts manually. However, this approach is rather coarse-grained, because of the way Kubernetes load balances across pods. For example, if you have a total of ten replicas, you can only shift traffic in 10% increments. If you are using a service mesh, you can use the service mesh routing rules to implement a more sophisticated canary release strategy. Here are some resources that may be helpful:
+A canary release is more complex to manage than either blue-green or rolling update, because you must dynamically route requests to different versions of the service. In Kubernetes, you can configure a Service to span two replica sets (one for each version) and adjust the replica counts manually. However, this approach is rather coarse-grained, because of the way Kubernetes load balances across pods. For example, if you have a total of ten replicas, you can only shift traffic in 10% increments. If you are using a service mesh, you can use the service mesh routing rules to implement a more sophisticated canary release strategy. Here are some resources that may be helpful:
 
 - Kubernetes without service mesh: [Canary deployments](https://kubernetes.io/docs/concepts/cluster-administration/manage-deployment/#canary-deployments)
 - Linkerd: [Dynamic request routing](https://linkerd.io/features/routing/)

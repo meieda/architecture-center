@@ -119,6 +119,8 @@ One advantage of using Fluentd with Elasticsearch for logs is that services do n
 
 Another option is to send logs to Operations Management Suite (OMS) Log Analytics. The [Log Analytics][log-analytics] service collects log data into a central repository, and can also consolidate data from other Azure services that your application uses. For more information, see [Monitor an Azure Container Service cluster with Microsoft Operations Management Suite (OMS)][k8s-to-oms].
 
+> [!div class="nextstepaction"]
+> [Continuous integration and delivery](./ci-cd.md)
 
 <!-- links -->
 

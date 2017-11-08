@@ -2,6 +2,8 @@
 
 Good API design is important in a microservices architecture, because every service manages its own data, which means that data exchange happens either through messages or through API calls. APIs must be efficient, to avoid creating [chatty I/O](../antipatterns/chatty-io/index.md). Because services are designed by teams working independently, APIs must have well-defined semantics and versioning schemes, so that updates don't break other services.
 
+![](./images/api-design.png)
+
 It's important to distinguish between two types of API:
 
 - A public API that client applications call. 
@@ -124,3 +126,6 @@ In this guidance, we focus less on OO coding principles, and put more emphasis o
 | Update value objects | PUT or PATCH | `PUT /deliveries/{id}/dropoff` |
 | Repository | Collection | `/deliveries?status=pending` |
 
+
+> [!div class="nextstepaction"]
+> [Ingestion and workflow](./ingestion-workflow.md)

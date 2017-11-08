@@ -1,8 +1,10 @@
-# Designing microservices on Azure
+# Designing microservices on Azure with Kubernetes
+
+![](./images/drone.svg)
 
 Microservices have become a popular architectural style for building cloud applications that are resilient, highly scalable, and able to evolve quickly. To be more than just a buzzword, however, microservices requires a different approach to designing and building applications. 
 
-In this set of articles, we explore how to build and run a microservices architecture on Azure. Topics include:
+In this set of articles, we explore how to build and run a microservices architecture on Azure, using Kubernetes as a container orchestrator. Topics include:
 
 - Using Domain Driven Design (DDD) to design a microservices architecture. 
 - Choosing the right Azure technologies for compute, storage, messaging, and other elements of the design.
@@ -25,7 +27,7 @@ In a microservices architecture, the application is composed of small, independe
 
 Done correctly, microservices can provide a number of useful benefits:
 
-- **Fast release cycles.** Because services are deployed independently, bug fixes and feature releases are more manageable and less risky. You can update a service without redeploying the entire application, and roll back an update if something goes wrong. In many traditional applications, if a bug is found in one part of the application, it can block the entire release process. New features may be held up waiting for a bug fix to be integrated, tested, and published. 
+- **Agility.** Because services are deployed independently, bug fixes and feature releases are more manageable and less risky. You can update a service without redeploying the entire application, and roll back an update if something goes wrong. In many traditional applications, if a bug is found in one part of the application, it can block the entire release process. New features may be held up waiting for a bug fix to be integrated, tested, and published. 
 
 - **Small code, small teams.** A single development team can build, test, and deploy a service. By not sharing code or data stores, dependencies between services are minimized. That makes it easier to add new features. A large code base is harder to understand. There is a tendency over time for code dependencies to become tangled, so that adding a new feature requires touching code in a lot of places. (Have you ever felt that you were spending more time resolving merge conflicts than writing new features?) Having smaller teams can also speed up development. The so-called "two-pizza rule" says that a team should be small enough two pizzas can feed the team (about 8 people). Large groups tend be less productive because communication is slower, management overhead goes up, and agility diminishes. Microservices let you scale the two-pizza rule to very large applications. 
 
@@ -33,14 +35,13 @@ Done correctly, microservices can provide a number of useful benefits:
 
 - **Resiliency.** If you design microservices correctly, as a set of independent, loosely coupled services, then an individual service can go down without taking down the entire application. 
 
-- **Scalability.** At cloud scale, you would like the ability to scale out the parts of the application that are especially resource intensive, without scaling out the entire application. With microservices, services can be scaled independently. At the same time, by running services in containers, you pack a higher density of service instances onto a single VM. 
-
+- **Scalability.** At cloud scale, you want to scale out the subsystems that require more resources, without scaling out the entire application. A microservices architecture allows each microservice to be scaled independently. At the same time, by running services in containers, you pack a higher density of service instances onto a single VM. 
 
 ## No free lunch
 
 These benefits don't come for free. This series of articles is designed to address some of the challenges of building microservices that are resilient, scalable, and manageable.
 
-- **Service boundaries**. When you build microservices, you need to think carefully about where to draw the boundaries between services. Once services are built and deployed in production, it can be hard to refactoring across these boundaries. Yet deciding on these boundaries is one of the big challenges in designing a microservices architecture. How big should a service be? When should functionality be factored into multiple services, or kept in the same service. In this series, we describe an approach that uses domain-driven design to find service boundaries. It starts with [Domain analysis](./domain-analysis.md) to find the bounded contexts, then applies a set of [tactical DDD patterns](./tactical-ddd.md) based on functional and non-functional requirements. 
+- **Service boundaries**. When you build microservices, you need to think carefully about where to draw the boundaries between services. Once services are built and deployed in production, it can be hard to refactoring across these boundaries. Yet deciding on these boundaries is one of the big challenges in designing a microservices architecture. How big should a service be? When should functionality be factored into multiple services, or kept in the same service. In this series, we describe an approach that uses domain-driven design to find service boundaries. It starts with [Domain analysis](./domain-analysis.md) to find the bounded contexts, then applies a set of [tactical DDD patterns](./microservice-boundaries.md) based on functional and non-functional requirements. 
 
 - **Complexity**. A microservices application has more moving parts. Each service is simple, but the services have to work together as a whole. A single user operation may involve multiple services. In the chapter [Ingestion and workflow](./ingestion-workflow.md), we examine some of the issues around ingesting requests at high throughput, coordinating a workflow, and handling failures. 
 
@@ -70,3 +71,6 @@ This scenario involves a fairly complicated domain. Some of the business concern
 > For help in choosing between a microservices architecture and other architectural styles, see the [Azure Application Architecture Guide](../guide/index.md).
 
 Our reference implementation uses Azure Container Service with Kubernetes. However, many of the high-level architectural decisions and challenges will apply to any container orchestrator.
+
+> [!div class="nextstepaction"]
+> [Domain analysis](./domain-analysis.md)

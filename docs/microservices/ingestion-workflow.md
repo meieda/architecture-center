@@ -77,7 +77,7 @@ In the drone application, a batch of messages can be processed in parallel. But 
 
 Akka Streams is also a very natural programming model for streaming events from Event Hubs. Instead of looping through a batch of events, you define a set of operations on events, and let Akka Streams handle the streaming. 
 
-IoTHub React uses a different checkpoint strategy than Event Host Processor. The checkpoint logic resides in a sink, which is the terminating stage in a pipeline. The design of Akka Streams allows the pipeline to continue streaming data while the sink is writing the checkpoint. That means the upstream processing stages don't need to wait on the checkpoint. You can configure chcekpointing to occur after a timeout or after a certain number of messages have been processed. 
+IoTHub React uses a different checkpoint strategy than Event Host Processor. The checkpoint logic resides in a sink, which is the terminating stage in a pipeline. The design of Akka Streams allows the pipeline to continue streaming data while the sink is writing the checkpoint. That means the upstream processing stages don't need to wait on the checkpoint. You can configure checkpointing to occur after a timeout or after a certain number of messages have been processed. 
 
 We designed the Scheduler service so that each container instance reads from a single partition. The partition number is configured through an environment variable. To read from 32 partitions, we deploy the Scheduler service in 32 pods, and assign each pod to a different partition. That provides a lot of flexibility in placing the pods within the Kubernetes cluster. That way, the service can scale horizontally by adding additional nodes to the cluster, so that each node has fewer pods running. Our performance tests showed that the Scheduler service is memory- and thread-bound, so performance depended greatly on the VM size and the number of pods per node.
 
@@ -134,5 +134,10 @@ If the Scheduler service crashes, it may be in the middle of processing one or m
 One approach is to design all operations to be idempotent. An operation is idempotent if it can be called multiple times without producing additional side-effects after the first call. In other words, a client can invoke the operation once, twice, or many times, and the result will be the same. Essentially, the service should ignore duplicate calls. The HTTP specification states that GET, PUT, and DELETE methods must be idempotent. POST methods are not guaranteed to be idempotent. In particular, if a POST method creates a new resource, there is generally no guarantee that this operation is idempotent. For a method with side effects to be idempotent, the service must be able to detect duplicate calls. For example, you can have the caller assign the ID, rather than having the service generate a new ID. The service can then check for duplicate IDs.
 
 Another option is to track the progress of every transaction in a durable store. Whenever a message is processed, look up the state in the durable store. The [Scheduler Agent Supervisor pattern][scheduler-agent-supervisor] is one way to implement this approach, although it adds complexity to the workflow logic.
+
+> [!div class="nextstepaction"]
+> [API gateways](./gateway.md)
+
+<!-- links -->
 
 [scheduler-agent-supervisor]: ../patterns/scheduler-agent-supervisor.md

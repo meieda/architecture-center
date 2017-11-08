@@ -7,8 +7,8 @@
     href: index.md
   - name: Domain analysis
     href: domain-analysis.md
-  - name: Tactical DDD
-    href: tactical-ddd.md
+  - name: Identifying microservice boundaries
+    href: microservice-boundaries.md
   - name: Data considerations
     href: data-considerations.md
   - name: Interservice communication
@@ -17,7 +17,7 @@
     href: api-design.md
   - name: Ingestion and workflow
     href: ingestion-workflow.md
-  - name: API Gateway
+  - name: API gateways
     href: gateway.md
   - name: Logging and monitoring
     href: logging-monitoring.md

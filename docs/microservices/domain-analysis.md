@@ -1,26 +1,27 @@
 # Designing microservices: Domain analysis 
 
-When designing microservices, one of the biggest challenges is defining the boundaries of individual services. The general rule is that a service should do "one thing" &mdash; but putting that rule into practice requires careful thought. 
+One of the biggest challenges of microservices is to define the boundaries of individual services. The general rule is that a service should do "one thing" &mdash; but putting that rule into practice requires careful thought. There is no mechanical process that will produce the "right" design. You have to think deeply about your business domain, requirements, and goals. Otherwise, you can end up with a haphazard design that exhibits some undesirable characteristics, such as hidden dependencies between services, tight coupling, or poorly designed interfaces. In this chapter, we take a domain-driven approach to designing microservices. 
 
-Here are two guiding principles:
+Microservices should be designed around business capabilities, not horizontal layers such as data access or messaging. In addition, they should have loose coupling and high functional cohesion. Microservices are *loosely coupled* if you can change one service without requiring other services to be updated at the same time. A microservice is *cohesive* if it has a single, well-defined purpose, such as managing user accounts or tracking delivery history. A service should encapsulate domain knowledge and abstract that knowledge from clients. For example, a client should be able to schedule a drone without knowing the details of the scheduling algorithm or how the drone fleet is managed.
 
-- Microservices should be designed around business capabilities, not horizontal layers such as data access or messaging.  
-- Microservices should have loose coupling and high functional cohesion. 
-
-Microservices are *loosely coupled* if you can change one service without requiring other services to be updated at the same time. Later in this guidance we will discuss some best practices to keep services decoupled. A microservice is *cohesive* if it has a single, well-defined purpose, such as managing user accounts or tracking delivery history. A service should encapsulate domain knowledge and abstract that knowledge from clients. For example, a client should be able to schedule a drone without knowing the details of the scheduling algorithm or how the drone fleet is managed.
-
-However, there is no mechanical process that will produce the "right" design. You have to think deeply about your business domain, requirements, and goals. Otherwise, you might end up with a haphazard design that exhibits some undesirable characteristics, such as hidden dependencies between services, tight coupling, or poorly designed interfaces. 
+Domain-driven design (DDD) provides a framework that can get you most of the way to a set of well-designed microservices. DDD has two distinct phases, strategic and tactical. In strategic DDD, you are defining the large-scale structure of the system. Strategic DDD helps to ensure that your architecture remains focused on business capabilities. Tactical DDD provides a set of design patterns that you can use to create the domain model. These patterns include entities, aggregates, and domain services. The tactical patterms can be used to identify microservice boundaries that will be loosely coupled and cohesive.
 
 ![](./images/ddd-process.png)
 
-We start by analyzing the business domain to understand the application's functional requirements. The output of this step is an informal description of the domain, which can then be refined into a more formal set of domain models. 
+Here is the process we'll follow.
 
-Next, we identify the *bounded contexts* of the domain. Each bounded context will contain its own domain model that represents a particular subdomain of the larger application. 
+1. Start by analyzing the business domain to understand the application's functional requirements. The output of this step is an informal description of the domain, which can then be refined into a more formal set of domain models. 
 
-In the third step, we further refine the domain model by applying a set of DDD *patterns* such as entity, aggregate, and service. Those patterns form the basis for designing a coherent set of microservices.
+2. Next, define the *bounded contexts* of the domain. Each bounded context contains a domain model that represents a particular subdomain of the larger application. 
+
+3. Within a bounded context, apply tactical DDD patterns to define entities, aggregates, and domain services. 
+ 
+4. Use the results from the previous step to identity the microservices in your application.
+
+In this chapter, we cover the first three steps, which are primarily concerned with DDD. In the next chapter, we will identify the microservices. 
 
 > [!NOTE]
-> This process is iterative and ongoing. A well-designed architecture will evolve over time. Service boundaries aren't fixed in stone. As the application evolves, you may refactor a service into several smaller services. 
+> This chapter doesn't show a complete and comprehensive domain analysis. We deliberately kept the example brief, to illustrate the main points. Also, DDD is an iterative, ongoing process. Service boundaries aren't fixed in stone. As an application evolves, you may break a service apart into several smaller services.
 
 ## Analyze the domain
 
@@ -32,9 +33,7 @@ Using a DDD approach will help you to design microservices so way that every ser
 
 The journey begins with domain analysis. Start by mapping all of the business functions and their connections. This will likely be a collaborative effort that involves domain experts, software engineers, and other stakeholders. You don't need to use any particular formalism.  Sketch a diagram or draw on whiteboard.
 
-As you fill in the diagram, you may start of identify discrete subdomains. Which functions are closely related? Which functions are core to the business, and which provide ancillary services? What is the dependency graph? 
-
-During this initial phase, you aren't concerned with technologies or implementation details. That said, you should note the place where the application will need to integrate with external systems, such as CRM, payment processing, or billing systems. 
+As you fill in the diagram, you may start of identify discrete subdomains. Which functions are closely related? Which functions are core to the business, and which provide ancillary services? What is the dependency graph? During this initial phase, you aren't concerned with technologies or implementation details. That said, you should note the place where the application will need to integrate with external systems, such as CRM, payment processing, or billing systems. 
 
 After an initial domain analysis, the team came up with the following rough sketch that depicts the domain.
 
@@ -58,7 +57,7 @@ It's also worth noting that not everything in the diagram will be implemented wi
 
 The domain model will include representations of real things in the world &mdash; users, drones, packages, and so forth. But that doesn't mean that every part of the system needs to use the same representation. 
 
-For example, the parts of the system that handle drone repair and predictive analysis will need to represent many of the physical characteristics of each drone in the fleet, such as maintenance history, mileage, age, model number, performance characteristics, and so on. But when it's time to schedule a delivery, we don't care about those things. The application only needs to know whether a drone is avalable, and the ETA for pickup and delivery. 
+For example, the parts of the system that handle drone repair and predictive analysis will need to represent many of the physical characteristics of each drone in the fleet, such as maintenance history, mileage, age, model number, performance characteristics, and so on. But when it's time to schedule a delivery, we don't care about those things. The application only needs to know whether a drone is available, and the ETA for pickup and delivery. 
 
 If we tried to create a single model for both subsystems, drone repair and deliveries, the model would be unnecessarily complex. In addition, it becomes harder to evolve the model over time, because changes have to satisfy multiple teams working on separate subsystems. Therefore, it's often better to have separate models that represent the same real-world entity (in this case, a drone) in two different contexts. 
 
@@ -74,3 +73,77 @@ In the book *Domain Driven Design* (Addison-Wesley, 2003), Eric Evans describes 
 
 For the rest of this journey, we will focus on the Shipping bounded context. 
 
+
+## Tactical DDD
+
+Domain driven design (DDD) has two distinct phases, strategic and tactical. In strategic DDD, you are defining the large-scale structure of the system. Tactical DDD provides a set of design patterns that you can use to create the domain model. In this section, we use these patterns to identify microservice boundaries in the Drone Delivery application.
+
+During the strategic phase of DDD, you are mapping out the business domain, defining bounded contexts for your domain models, and developing a ubiquitous language. Tactical DDD is when you define your domain models with more precision. The tactical patterns are applied within a single bounded context. In a microservices architecture, we are particularly interested in the entity and aggregate patterns. Applying these patterns will help us to identify natural boundaries for the services in our application. As a general principle, a microservice should be no smaller than an aggregate, and no larger than a bounded context. First, we'll review the tactical patterns, then we'll apply them to the Shipping bounded context in the drone delivery application.
+
+### Overview of the tactical patterns
+
+If you are already familiar with DDD, you can skip this section. The patterns are described in more detail in *Domain Driven Design* by Eric Evans (see chapters 5 &ndash; 6), and *Implementing Domain-Driven Design* by Vaughn Vernon. This section is only a summary of the patterns.
+
+**Entities**. An entity is an object with a unique identity that persists over time. For example, in a banking application, customers and accounts would be entities. 
+
+- An entity has a unique identifier in the system, which can be used to look up or retrieve the entity. That doesn't mean the identifier is necessarily exposed to users. It could be a GUID or a primary key in a database. The identifier might be a composite key, especially for child entities.
+- An identity may span multiple bounded contexts, and may endure beyond the lifetime of the application. For example, bank account numbers or government-issued IDs are not tied to the lifetime of a particular application.
+- The attributes of an entity may change over time. For example, a person's name or address might change, but they are still the same person. 
+- An entity can hold references to other entities.
+ 
+**Value objects**. A value object has no identity. It is defined only by the values of its attributes. Value objects are also immutable. To update a value object, you always create a new instance to replace the old one. Value objects can have methods that encapsulate domain logic, but those methods should have no side-effects on the object's state. Typical examples of value objects include colors, dates and times, and currency values. 
+
+**Aggregates**. An aggregate defines a consistency boundary around one or more entities. Exactly one entity in an aggregate is the root. Lookup is done using the root entity's identifier. Any other entities in the aggregate are children of the root, and are referenced by following pointers from the root. 
+
+The purpose of an aggregate is to model transactional invariants. Things in the real world have complex webs of relationships. Customers create orders, orders contain products, products have suppliers, and so on. If the application modifies several related objects, how does it guarantee consistency? How do we keep track of invariants and enforce them?  
+
+Traditional applications have often used database transactions to enforce consistency. In a distributed application, however, that's often not be feasible. A single business transaction may span multiple data stores, or may be long running, or may involve third-party services. Ultimately it's up to the application, not the data layer, to enforce the invariants required for the domain. 
+
+> [!NOTE]
+> It's actually common for an aggregate to consist of a single entity, with no child entities. Even so, the distinction between aggregates and entities is still important. An aggregate enforces transactional semantics, while an entity might not.
+
+**Domain and application services**. In DDD terminology, a service is an object that implements some logic without holding any state. Evans distinguishes between *domain services*, which encapsulate domain logic, and *application services*, which provide technical functionality, such as user authentication or sending an SMS message. Domain services are often used to model behavior that spans multiple entities. 
+
+> [!NOTE]
+> The term *service* is overloaded in computer science. The definition here is not directly related to microservices.
+
+**Domain events**. Domain events can be used to notify other parts of the system when something happens. As the name signifies, domain events should model things that are meaningful in terms of the domain, not the implementation details. For example, "Record inserted in table" is not a domain event. "Delivery cancelled" is a domain event. Domain events are especially relevant in a microservices architecture, where services are distributed and do not share data stores. The chapter [Interservice communication](./interservice-communication.md) looks at asynchronous messaging in microservices.
+ 
+![](./images/ddd-patterns.png)
+
+There are a few other DDD patterns not listed here, including factories, repositories, and modules. These can be useful patterns within a microservice, but are less relevant for designing service boundaries.
+
+## Define entities and aggregates
+
+We start with the scenarios that the Shipping bounded context must handle.
+
+- A business (the sender) can schedule a drone to deliver a package to a customer (the receiver). Alternatively, a user can request a drone to pick up goods from a business that is registered with the drone delivery service. 
+- The sender generates a tag (barcode or RFID) to put on the package. 
+- A drone will pick up and deliver a package from the source location to the destination location.
+- When a user schedules a delivery, the system provides an ETA based on route information, weather conditions, historical data, and so forth. 
+- When the drone is in flight, the sender and the receiver can track the current location and the latest ETA. 
+- Until a drone has picked up the package, the user can cancel a delivery.
+- When the delivery is complete, the sender and the receiver are notified.
+- The sender can request delivery confirmation from the user, in the form of a signature or finger print.
+- A user can look up the history of a completed delivery.
+
+From these scenarios, the development team identified the following **entities**.
+
+- Delivery
+- Package
+- Drone
+- Account
+- Confirmation
+- Notification
+- Tag
+
+Of these, Delivery, Package, Drone, and Account are **aggregates**. Tag, Confirmation, and Notification are associated with Delivery entities. The **value objects** in this design include Location, ETA, PackageWeight, and PackageSize. 
+
+To illustrate, here is a UML diagram of the Delivery aggregate. Notice that it holds references to other aggregates, including Account, Package, and Drone.
+
+![](./images/delivery-entity.png)
+
+The development team also identified an important piece of functionality that doesn't fit neatly into any of the entities or aggregates. Some part of the system must coordinate all of the steps involved in scheduling or updating a delivery. Therefore, the development team added two **domain services** to the design: a *Scheduler* that coordinates the steps, and a *Supervisor* that monitors the status of each step, in order to detect whether any steps have failed or timed out. This is a variation of the [Scheduler Agent Supervisor pattern](../patterns/scheduler-agent-supervisor.md).
+
+> [!div class="nextstepaction"]
+> [Identifying microservice boundaries](./microservice-boundaries.md)
