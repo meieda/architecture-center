@@ -1,4 +1,4 @@
-# Designing microservices on Azure with Kubernetes
+# Designing, implementing, and operating microservices on Azure with Kubernetes
 
 ![](./images/drone.svg)
 
