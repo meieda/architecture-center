@@ -31,14 +31,14 @@ After you identify the microservices in your application, validate your design a
 - You haven't created inter-dependencies that will require services to be deployed in lock-step. It should always be possible to deploy a service without redeploying any other services.
 - Services are not tightly coupled, and can evolve independently.
 - Your service boundaries will not create problems with data consistency or integrity. Microservices maintain their own data stores, and sometimes it's important to maintain data consistency by putting functionality into a single microservice. That said, consider whether you really need strong consistency. There are strategies for addressing eventual consistency in a distributed system, and the benefits of decomposing services often outweigh the costs of eventual consistency.
+
+Above all, it's important to be pragmatic, and remember that domain-driven design is an iterative process. When in doubt, start with more coarse-grained microservices. Splitting a microservice into two smaller services is a easier than refactoring functionality across several existing microservices.
   
 ## Drone Delivery: Defining the microservices
 
 Recall that the development team had identified the following aggregates: Delivery, Package, Drone, and Account. The first two are part of the Shipping bounded context, while Drone and Account belong to other bounded contexts. 
 
 - Delivery and Package are obvious candidates for microservices. 
-
-- The Scheduler and Supervisor are both stateless domain services. They need to coordinate other microservices, so it makes sense to implement them as separate microservices. 
 
 - Drone and Account are interesting because they reside in external bounded contexts. The other bounded contexts are beyond the scope of this guidance, so we'll treat Done and Account as "placeholders" whose implementation is yet to be determined. One option is to call directly into those external contexts. Another option is to create Drone and Account microservices that mediate between bounded contexts, in order to expose APIs or data schemas that are more suited to the Shipping context. Here are some factors to consider in this situation:
 
@@ -50,6 +50,8 @@ Recall that the development team had identified the following aggregates: Delive
      
     - What is the team structure? Is it easy to communicate with the team that's responsible for the other bounded context? If not, creating a mediator service can help to mitigate the cost of cross-team communication.
      
+- The Scheduler and Supervisor are domain services that coordinate the activities performed by other microservices. It makes sense to factor these into their own microservices.  
+
 So far, we've haven't considered any non-functional requirements. Thinking about the application's throughput requirements, the development team decides to create a separate Ingestion microservice that is responsible for ingesting client requests. This microservice will implement [load leveling](../patterns/queue-based-load-leveling.md) by putting incoming requests into a buffer for processing. The Scheduler will read the requests from the buffer and execute the workflow.
 
 The following diagram shows the design at this point:
@@ -63,19 +65,15 @@ The term *compute* refers to the hosting model for the computing resources that 
 - A service orchestrator that manages services running on dedicated nodes (VMs).
 - A serverless architecture using functions as a service (FaaS). 
 
-While these aren't the only options, they are both proven approaches to building microservices.
+While these aren't the only options, they are both proven approaches to building microservices. A solution might include both elements. 
 
 ### Service orchestrators
 
-An orchestrator handles tasks related to deploying and managing a set of services. These tasks include placing services on nodes, health monitoring, restarting unhealthy services, load balancing network traffic across service instances, service discovery, scaling the number of instances of a service, and applying configuration updates. 
-
-Azure provides several options for orchestrators:
+An orchestrator handles tasks related to deploying and managing a set of services. These tasks include placing services on nodes, health monitoring, restarting unhealthy services, load balancing network traffic across service instances, service discovery, scaling the number of instances of a service, and applying configuration updates. Popular choices of orchestrator include Kubernetes, DC/OS, Docker Swarm, and Service Fabric. 
 
 - [Azure Container Service](/azure/container-service/) (ACS) is an Azure service that lets you deploy a production-ready Kubernetes, DC/OS, or Docker Swarm cluster.
 
-- [ACS Engine][acs-engine] is an open-source tool that generates Azure Resource Manager (RM) templates for Kubernetes, DC/OS, or Docker Swarm clusters. Unlike ACS, ACS Engine is not a hosted Azure service, and does not offer an SLA. However, it enables some advanced configuration options that are not currently available in ACS. For more information, see [Container Service frequently asked questions][acs-faq].
-
-- [AKS (Azure Container Service)](/azure/aks/) is a managed Kubernetes service. AKS provisions Kubernetes and exposes the Kubernetes API endpoints, but hosts and manages the Kubernetes control plane, performing automated upgrades, automated patching, autoscaling, and other management tasks. You can think of AKS as being "Kubernetes APIs as a service." At the time of writing, AKS is still in preview. However, it's expected that AKS will become the preferred way to run Kubernetes in Azure.
+- [AKS (Azure Container Service)](/azure/aks/) is a managed Kubernetes service. AKS provisions Kubernetes and exposes the Kubernetes API endpoints, but hosts and manages the Kubernetes control plane, performing automated upgrades, automated patching, autoscaling, and other management tasks. You can think of AKS as being "Kubernetes APIs as a service." At the time of writing, AKS is still in preview. However, it's expected that AKS will become the preferred way to run Kubernetes in Azure. 
 
 - [Service Fabric](/azure/service-fabric/) is a distributed systems platform for packaging, deploying, and managing microservices. Microservices can be deployed to Service Fabric as containers, as binary executables, or as [Reliable Services](/azure/service-fabric/service-fabric-reliable-services-introduction). Using the Reliable Services programming model, services can directly use Service Fabric programming APIs to query the system, report health, receive notifications about configuration and code changes, and discover other services. A key differentiation with Service Fabric is its strong focus on building stateful services using [Reliable Collections](/azure/service-fabric/service-fabric-reliable-services-reliable-collections).
 

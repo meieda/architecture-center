@@ -48,7 +48,7 @@ When a user schedules a new delivery, the client request includes information ab
 
 The various backend services care about different subsets of the information the request, and also have different read and write profiles. 
 
-- The Delivery service stores information about every delivery that is currently scheduled or in progress. It also listens for events from the drones, and updates the status whenever a package is picked up or dropped off. The delivery service 
+- The Delivery service stores information about every delivery that is currently scheduled or in progress. It listens for events from the drones, and tracks the status of deliveries that are in progress. It also sends domain events with delivery status updates.
 
 - The Delivery History service listens for delivery status events from the Delivery service. It stores this data in long-term storage, for the purpose of historical queries and data analytics.
 
@@ -56,7 +56,7 @@ The various backend services care about different subsets of the information the
 
 ### Delivery service
 
-It's expected that users will frequently check the status of a delivery while they are waiting for their package. Therefore, the Delivery service requires a data store that emphasizes retrieval speed over long-term storage. Also, the Delivery service does not perform any complex queries or analysis, it simply fetches the latest status for a given delivery. For these reasons, the Delivery service team chose Azure Redis Cache.
+It's expected that users will frequently check the status of a delivery while they are waiting for their package. Therefore, the Delivery service requires a data store that emphasizes throughput (read and write) over long-term storage. Also, the Delivery service does not perform any complex queries or analysis, it simply fetches the latest status for a given delivery. For these reasons, the Delivery service team chose Azure Redis Cache.
 
 ### Delivery History service
 

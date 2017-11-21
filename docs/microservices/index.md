@@ -19,24 +19,24 @@ Throughout, we focus on an end-to-end scenario: A drone delivery service that le
 In a microservices architecture, the application is composed of small, independent services. Here are some of the defining characteristics of microservices:
 
 - Each service implements a single business capability.
-- Services run in separate processes, communicating through well-defined APIs or messaging patterns.
+- A service is small enough that a single small team of developers, typically 5 &ndash; 10 people, can write and maintain it.
+- Services run in separate processes, communicating through well-defined APIs or messaging patterns. 
 - Services do not share data stores or data schemas. Each service is responsible for managing its own data. 
 - Services have separate code bases, and do not share source code. They may use common utility libraries, however.
-- Services are small. A small team of developers, typically 5 &ndash; 10 people, can write and maintain a service.
-- Services can be deployed independently. 
+- Each service can be deployed and updated independently of other services. 
 
 Done correctly, microservices can provide a number of useful benefits:
 
-- **Agility.** Because services are deployed independently, bug fixes and feature releases are more manageable. You can update a service without redeploying the entire application, and roll back an update if something goes wrong. In many traditional applications, if a bug is found in one part of the application, it can block the entire release process. New features may be held up waiting for a bug fix to be integrated, tested, and published. 
+- **Agility.** Because services are deployed independently, bug fixes and feature releases are more manageable. You can update a service without redeploying the entire application, and roll back an update if something goes wrong. In many traditional applications, if a bug is found in one part of the application, it can block the entire release process; as a result, new features may be held up waiting for a bug fix to be integrated, tested, and published.
 
-- **Small code, small teams.** A single development team can build, test, and deploy a service. By not sharing code or data stores, dependencies between services are minimized. That makes it easier to add new features. A large code base is harder to understand. There is a tendency over time for code dependencies to become tangled, so that adding a new feature requires touching code in a lot of places. Having smaller teams can also speed up development. The so-called "two-pizza rule" says that a team should be small enough two pizzas can feed the team. Large groups tend be less productive because communication is slower, management overhead goes up, and agility diminishes. Microservices let you scale the two-pizza rule to very large applications. 
+- **Small code, small teams.** A single feature team can build, test, and deploy a service. By not sharing code or data stores, dependencies between services are minimized. That makes it easier to add new features. Large code bases are harder to understand. There is a tendency over time for code dependencies to become tangled, so that adding a new feature requires touching code in a lot of places. Having smaller teams can also speed up development. The "two-pizza rule" says that a team should be small enough that two pizzas can feed the team. Obviously that's not an exact metric and depends on team appetites! But the point is that large groups tend be less productive, because communication is slower, management overhead goes up, and agility diminishes.  
 
 - **Mix of technologies**. Teams can pick the technology that best fits their service, using a mix of technology stacks as appropriate. 
 
-- **Resiliency.** If an individual microservice becomes unavailable, it won't disrupt the entire application, as long as any upstream microserves are design to handle faults correctly (for example, by implementing circuit breaking). 
+- **Resiliency.** If an individual microservice becomes unavailable, it won't disrupt the entire application, as long as any upstream microserves are designed to handle faults correctly (for example, by implementing circuit breaking). 
 
 - **Scalability.** At cloud scale, you want to scale out the subsystems that require more resources, without scaling out the entire application. A microservices architecture allows each microservice to be scaled independently. At the same time, by running services in containers, you pack a higher density of service instances onto a single host. 
-
+ 
 ## No free lunch
 
 These benefits don't come for free. This series of articles is designed to address some of the challenges of building microservices that are resilient, scalable, and manageable.

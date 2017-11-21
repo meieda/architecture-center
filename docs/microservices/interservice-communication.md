@@ -74,7 +74,7 @@ With these considerations in mind, the development team made the following desig
 
 - The Delivery service sends delivery status events, including DeliveryCreated, DeliveryRescheduled, DeliveryInTransit, and DeliveryComplete. Any interested service can subscribe to these updates. In the current design, the Delivery History service is the only subscriber, but it's possible that other services might need to consume these events. For example, they might be used for a dashboard or real-time analytics service. Another reason to use events is that it removes the consumers from the workflow path, meaning the Delivery Scheduler does not have to wait on them.
 
-- If any of the downstream services fails during a transaction, the Scheduler service sends an asynchronous message to the Supervisor, so that the Supervisor can schedule compensating transactions, as described in the chapter [Ingestion and workflow][ingestion-workflow].   
+- Transient failures can be retried. However, if any downstream service has a non-transient failure, the entire transaction should be marked as failed. To handle this case, the Scheduler service sends an asynchronous message to the Supervisor, so that the Supervisor can schedule compensating transactions, as described in the chapter [Ingestion and workflow][ingestion-workflow].   
 
 ![](./images/drone-communication.png)
 
