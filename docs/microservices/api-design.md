@@ -105,11 +105,11 @@ But in a microservices architecture, services don't share a code base and don't 
 
 ![](./images/ddd-rest.svg)
 
-As a result, code has a smaller surface area. If the Drone Management service defines a Location class, the scope of that class is limited to the service, making its easier to validate the correct usage. If another service needs to update the drone location, it has to go through the Drone Management service API.
+As a result, code has a smaller surface area. If the Drone Management service defines a Location class, the scope of that class is limited to the service, making it easier to validate the correct usage. If another service needs to update the drone location, it has to go through the Drone Management service API.
 
 In this guidance, we focus less on OO coding principles, and put more emphasis on API design. But it turns out that RESTful APIs can model many of the tactical DDD concepts.
 
-- RESTful APIs model *resources*, which map naturally to aggregates. Aggregates are consistency boundaries. Operations on aggregates should never leave an aggregate in an inconsistent states.  Instead of creating APIs allow a client to manipulate the internal state of an aggregate, favor coarse-grained APIs that expose aggregates as resources.
+- RESTful APIs model *resources*, which map naturally to aggregates. Aggregates are consistency boundaries. Operations on aggregates should never leave an aggregate in an inconsistent state.  Instead of creating APIs allow a client to manipulate the internal state of an aggregate, favor coarse-grained APIs that expose aggregates as resources.
 
 - Aggregates are addressable by ID. Aggregates correspond to resources, and the URL is the stable identifier.
 

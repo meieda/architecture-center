@@ -6,13 +6,11 @@ This chapter describes considerations for managing data in a microservices archi
 
 A basic principle of microservices is that each service manages its own data. Two services should not share a data store. A service is responsible for its own private data store, which other services cannot access directly.
 
-The reason for this rule is to avoid tight coupling between services. We want every service to be updated and deployed independently, and sharing a database creates a dependency. If there is a change to the data schema, the change must be coordinated across every service that relies on that database. By isolating each service's data store, we can limit the scope of change, and preserve the agility of truly independent deployments.
+The reason for this rule is to avoid unintentional coupling between services, which can result if services share the same underlying data schemas. If there is a change to the data schema, the change must be coordinated across every service that relies on that database. By isolating each service's data store, we can limit the scope of change, and preserve the agility of truly independent deployments. Another reason is that each microservice may have its own data models, queries, or read/write patterns. Using a shared data store limits each team's ability to optimize data storage for their particular service. 
 
 ![](../guide/architecture-styles/images/cqrs-microservices-wrong.png)
 
 > It's fine for services to share the same physical database server. The problem occurs when services shared the same schema, or read and write to the same set of database tables.
-
-A second reason to avoid shared databases is that each service may have its own data models, queries, or read/write patterns. Using a shared database would limit each team's ability to optimize data storage for their particular service. 
 
 This approach naturally leads to [polyglot persistence](https://martinfowler.com/bliki/PolyglotPersistence.html) &mdash; the use of multiple data storage technologies within a single application. One service might require the schema-on-read capabilities of a document database. Another might need the referential integrity provided by an RDBMS. Each team is free to make the best choice for their service. For more about the general principle of polyglot persistence, see [Use the best data store for the job](../guide/design-principles/use-the-best-data-store.md). 
 

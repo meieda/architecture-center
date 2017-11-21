@@ -18,10 +18,12 @@ Here is the process we'll follow.
  
 4. Use the results from the previous step to identity the microservices in your application.
 
-In this chapter, we cover the first three steps, which are primarily concerned with DDD. In the next chapter, we will identify the microservices. 
+In this chapter, we cover the first three steps, which are primarily concerned with DDD. In the next chapter, we will identify the microservices.
+
+Note that DDD is an iterative, ongoing process. Service boundaries aren't fixed in stone. As an application evolves, you may break a service apart into several smaller services.
 
 > [!NOTE]
-> This chapter doesn't show a complete and comprehensive domain analysis. We deliberately kept the example brief, to illustrate the main points. Also, DDD is an iterative, ongoing process. Service boundaries aren't fixed in stone. As an application evolves, you may break a service apart into several smaller services.
+> This chapter isn't meant to show a complete and comprehensive domain analysis. We deliberately kept the example brief, to illustrate the main points. For more background on DDD, we recommend Eric Evans' *Domain-Driven Design*, the book that coined the term domain-driven design. Another good reference is *Implementing Domain-Driven Design* by Vaughn Vernon. 
 
 ## Analyze the domain
 
@@ -46,9 +48,7 @@ After an initial domain analysis, the team came up with the following rough sket
 - Similarly, **video surveillance** is another area that the company might expand into at a later time.
 - Support services include **user accounts**, **Call center**, and others.
  
-Notice that at this point we have not defined any objects in our design, or made any technology choices.
-
-It's also worth noting that not everything in the diagram will be implemented within the application. For example, invoicing might be an external software system. Third-party transportation and call center are services provided by third parties. Even so, the application needs to interact with these systems and services, so it's important they are part of the domain model. 
+Notice that at this point in the process, we haven't made any decisions about implementation or technologies. Some of the subsystems may involve external software systems or third-party services. Even so, the application needs to interact with these systems and services, so it's important they are part of the domain model. 
 
 > [!NOTE]
 > When an application depends on an external system, there is a risk that the external system's data schema or API will leak into your application, ultimately compromising the architectural design. This is particularly true with legacy systems that may not follow modern best practices, and may use convoluted data schemas or obsolete APIs. In that case, it's important to have a well-defined boundary between these external systems and the application. Consider using the [Strangler Pattern](../patterns/strangler.md) or the [Anti-Corruption Layer Pattern](../patterns/anti-corruption-layer.md).
@@ -69,16 +69,13 @@ Looking at the previous diagram, we can group functionality according to whether
  
 Bounded contexts are not necessarily isolated from one another. The solid lines that connect the bounded contexts represent the places where two bounded contexts interact. For example, Shipping depends on User Accounts to get information about customers, and depends on Drone Management to schedule drones from the fleet.
 
-In the book *Domain Driven Design* (Addison-Wesley, 2003), Eric Evans describes several patterns for maintaining the integrity of a domain model when it interacts with another bounded context. One of the main principles of microservices is that services communicate through well-defined APIs. This approach corresponds to two patterns that Evans calls Open Host Service and Published Language. The idea of Open Host Service is that a subsystem defines a formal protocol (API) that other subsystems use to communicate with it. Published Language extends this idea by publishing the API in a form that other teams can use to write clients. When we start designing our actual microservices, they will expose RESTful APIs that are described using the [OpenAPI Specification](https://www.openapis.org/specification/repo). 
+In the book *Domain Driven Design* (Addison-Wesley, 2003), Eric Evans describes several patterns for maintaining the integrity of a domain model when it interacts with another bounded context. One of the main principles of microservices is that services communicate through well-defined APIs. This approach corresponds to two patterns that Evans calls Open Host Service and Published Language. The idea of Open Host Service is that a subsystem defines a formal protocol (API) that other subsystems use to communicate with it. Published Language extends this idea by publishing the API in a form that other teams can use to write clients. When we start designing our actual microservices, they will expose RESTful APIs that are described using the [OpenAPI Specification](https://www.openapis.org/specification/repo). This specification defines a language-agnostic interface description for REST APIs, expressed in JSON or YAML format.
 
 For the rest of this journey, we will focus on the Shipping bounded context. 
 
-
 ## Tactical DDD
 
-Domain driven design (DDD) has two distinct phases, strategic and tactical. In strategic DDD, you are defining the large-scale structure of the system. Tactical DDD provides a set of design patterns that you can use to create the domain model. In this section, we use these patterns to identify microservice boundaries in the Drone Delivery application.
-
-During the strategic phase of DDD, you are mapping out the business domain, defining bounded contexts for your domain models, and developing a ubiquitous language. Tactical DDD is when you define your domain models with more precision. The tactical patterns are applied within a single bounded context. In a microservices architecture, we are particularly interested in the entity and aggregate patterns. Applying these patterns will help us to identify natural boundaries for the services in our application. As a general principle, a microservice should be no smaller than an aggregate, and no larger than a bounded context. First, we'll review the tactical patterns, then we'll apply them to the Shipping bounded context in the drone delivery application.
+During the strategic phase of DDD, you are mapping out the business domain and defining bounded contexts for your domain models. Tactical DDD is when you define your domain models with more precision. The tactical patterns are applied within a single bounded context. In a microservices architecture, we are particularly interested in the entity and aggregate patterns. Applying these patterns will help us to identify natural boundaries for the services in our application. As a general principle, a microservice should be no smaller than an aggregate, and no larger than a bounded context. First, we'll review the tactical patterns, then we'll apply them to the Shipping bounded context in the drone delivery application.
 
 ### Overview of the tactical patterns
 

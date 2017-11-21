@@ -31,9 +31,7 @@ After you identify the microservices in your application, validate your design a
 - You haven't created inter-dependencies that will require services to be deployed in lock-step. It should always be possible to deploy a service without redeploying any other services.
 - Services are not tightly coupled, and can evolve independently.
 - Your service boundaries will not create problems with data consistency or integrity. Microservices maintain their own data stores, and sometimes it's important to maintain data consistency by putting functionality into a single microservice. That said, consider whether you really need strong consistency. There are strategies for addressing eventual consistency in a distributed system, and the benefits of decomposing services often outweigh the costs of eventual consistency.
-
-Above all, it's important to be pragmatic, and remember that domain-driven design is an iterative process. When in doubt, start with more coarse-grained microservices. Splitting a microservice into two smaller services is a easier than refactoring functionality across several existing microservices.
-    
+  
 ## Drone Delivery: Defining the microservices
 
 Recall that the development team had identified the following aggregates: Delivery, Package, Drone, and Account. The first two are part of the Shipping bounded context, while Drone and Account belong to other bounded contexts. 
@@ -42,7 +40,7 @@ Recall that the development team had identified the following aggregates: Delive
 
 - The Scheduler and Supervisor are both stateless domain services. They need to coordinate other microservices, so it makes sense to implement them as separate microservices. 
 
-- Drone and Account are interesting because they reside in external bounded contexts. One option is to call directly into those external contexts. Another option is to create Drone and Account microservices that mediate between the Shipping bounded context and the other contexts. These microservices might expose APIs or data schemas that are more suited to the Shipping context. The other bounded contexts are beyond the scope of this guidance, so we'll treat Done and Account as "placeholders" whose implementation is yet to be determined. But here are some factors that you might consider in this situation:
+- Drone and Account are interesting because they reside in external bounded contexts. The other bounded contexts are beyond the scope of this guidance, so we'll treat Done and Account as "placeholders" whose implementation is yet to be determined. One option is to call directly into those external contexts. Another option is to create Drone and Account microservices that mediate between bounded contexts, in order to expose APIs or data schemas that are more suited to the Shipping context. Here are some factors to consider in this situation:
 
     - What is the network overhead of calling directly into the other bounded context? 
     
@@ -73,13 +71,13 @@ An orchestrator handles tasks related to deploying and managing a set of service
 
 Azure provides several options for orchestrators:
 
-- [Azure Container Service](/azure/container-service/) (ACS) is an SLA-backed Azure service that lets you deploy a production-ready Kubernetes, DC/OS, or Docker Swarm cluster.
+- [Azure Container Service](/azure/container-service/) (ACS) is an Azure service that lets you deploy a production-ready Kubernetes, DC/OS, or Docker Swarm cluster.
 
 - [ACS Engine][acs-engine] is an open-source tool that generates Azure Resource Manager (RM) templates for Kubernetes, DC/OS, or Docker Swarm clusters. Unlike ACS, ACS Engine is not a hosted Azure service, and does not offer an SLA. However, it enables some advanced configuration options that are not currently available in ACS. For more information, see [Container Service frequently asked questions][acs-faq].
 
 - [AKS (Azure Container Service)](/azure/aks/) is a managed Kubernetes service. AKS provisions Kubernetes and exposes the Kubernetes API endpoints, but hosts and manages the Kubernetes control plane, performing automated upgrades, automated patching, autoscaling, and other management tasks. You can think of AKS as being "Kubernetes APIs as a service." At the time of writing, AKS is still in preview. However, it's expected that AKS will become the preferred way to run Kubernetes in Azure.
 
-- [Service Fabric](/azure/service-fabric/) is a distributed systems platform for packaging, deploying, and managing microservices. Microservices can be deployed to Service Fabric as containers, as binary executables, or as [Reliable Services](/azure/service-fabric/service-fabric-reliable-services-introduction). Reliable Services is a light-weight framework that integrates with the Service Fabric platform.
+- [Service Fabric](/azure/service-fabric/) is a distributed systems platform for packaging, deploying, and managing microservices. Microservices can be deployed to Service Fabric as containers, as binary executables, or as [Reliable Services](/azure/service-fabric/service-fabric-reliable-services-introduction). Using the Reliable Services programming model, services can directly use Service Fabric programming APIs to query the system, report health, receive notifications about configuration and code changes, and discover other services. A key differentiation with Service Fabric is its strong focus on building stateful services using [Reliable Collections](/azure/service-fabric/service-fabric-reliable-services-reliable-collections).
 
 ### Containers
 
@@ -113,7 +111,7 @@ Here are some factors to consider in choosing between an orchestrator approach a
 
 **Scalability**. Azure Functions scales automatically to meet demand, based on the number of incoming events. With an orchestrator, you can scale out by increasing the number of services instances running in the cluster. You can also scale by adding additional VMs to the cluster.
 
-Although this guide is focused on building microservices with Kubernetes, we did use Azure Functions for one of our services: The Delivery History service. Azure Functions was a good fit for this particular service, because the service is an event-driven workload. By using an Event Hubs trigger to invoke the function, the amount of code needed was minimal. Also, the Delivery History service is not part of the main workflow, so running it outside of the Kubernetes cluster doesn't affect the end-to-end latency of user-initiated operations. 
+Although our reference implementation uses Kubernetes, we did use Azure Functions for one of our services: The Delivery History service. Azure Functions was a good fit for this particular service, because the service is an event-driven workload. By using an Event Hubs trigger to invoke the function, the amount of code needed was minimal. Also, the Delivery History service is not part of the main workflow, so running it outside of the Kubernetes cluster doesn't affect the end-to-end latency of user-initiated operations. 
 
 
 
