@@ -31,11 +31,11 @@ Before writing any code, you need a bird's eye view of the entire system that yo
 
 A domain model must include behaviors and business rules &mdash; it's not just a data schema or an object graph. The domain model is not code. The application code conforms to the model, and expresses the model, but the model is logically separate from the implementation. (However, don't make the mistake of thinking that DDD has to follow a waterfall model, where the domain model is finalized before starting to implement. The domain model should evolve with the application.)
 
-Using a DDD approach will help you to design microservices so way that every service forms a natural fit to a functional business requirement. It can help you to avoid the trap of letting your design be dictated by organizational boundaries or technology choices &mdash; say, putting unrelated functionality into the same service simply because they both use a SQL database.
+Using a DDD approach will help you to design microservices so that every service forms a natural fit to a functional business requirement. It can help you to avoid the trap of letting your design be dictated by organizational boundaries or technology choices &mdash; say, putting unrelated functionality into the same service simply because they both use a SQL database.
 
 The journey begins with domain analysis. Start by mapping all of the business functions and their connections. This will likely be a collaborative effort that involves domain experts, software architects, and other stakeholders. You don't need to use any particular formalism.  Sketch a diagram or draw on whiteboard.
 
-As you fill in the diagram, you may start of identify discrete subdomains. Which functions are closely related? Which functions are core to the business, and which provide ancillary services? What is the dependency graph? During this initial phase, you aren't concerned with technologies or implementation details. That said, you should note the place where the application will need to integrate with external systems, such as CRM, payment processing, or billing systems. 
+As you fill in the diagram, you may start to identify discrete subdomains. Which functions are closely related? Which functions are core to the business, and which provide ancillary services? What is the dependency graph? During this initial phase, you aren't concerned with technologies or implementation details. That said, you should note the place where the application will need to integrate with external systems, such as CRM, payment processing, or billing systems. 
 
 After an initial domain analysis, the team came up with the following rough sketch that depicts the domain.
 
@@ -59,7 +59,7 @@ The domain model will include representations of real things in the world &mdash
 
 For example, the parts of the system that handle drone repair and predictive analysis will need to represent many of the physical characteristics of each drone in the fleet, such as maintenance history, mileage, age, model number, performance characteristics, and so on. But when it's time to schedule a delivery, we don't care about those things. The application only needs to know whether a drone is available, and the ETA for pickup and delivery. 
 
-If we tried to create a single model for both subsystems, drone repair and deliveries, the model would be unnecessarily complex. In addition, it becomes harder to evolve the model over time, because changes have to satisfy multiple teams working on separate subsystems. Therefore, it's often better to have separate models that represent the same real-world entity (in this case, a drone) in two different contexts. 
+If we tried to create a single model for both subsystems, drone repair and deliveries, the model would be unnecessarily complex. In addition, it becomes harder to evolve the model over time, because changes have to satisfy multiple teams working on separate subsystems. Therefore, it's often better to design separate models that represent the same real-world entity (in this case, a drone) in two different contexts. Each model contains only the features and attributes that are relevant within its particular context.
 
 This is where the DDD concept of *bounded contexts* comes into play. A bounded context is simply the boundary within a domain where a particular domain model applies. Looking at the previous diagram, we can group functionality according to whether functions should share a single domain model. 
 

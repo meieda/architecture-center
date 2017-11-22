@@ -1,12 +1,12 @@
 # Designing microservices: Logging and monitoring
 
-In any complex application, at some point something will go wrong. In a microservices application, you need to track what's happening across dozens or even hundreds of services. Logging and monitoring are critically important in providing a holistic view the system. 
+In any complex application, at some point something will go wrong. In a microservices application, you need to track what's happening across dozens or even hundreds of services. Logging and monitoring are critically important to give you a holistic view of the system. 
 
 ![](./images/monitoring.png)
 
 In a microservices architecture, it can be especially challenging to pinpoint the exact cause of errors or performance bottlenecks. A single user operation might span multiple services. Services may hit network I/O limits inside the cluster. A chain of calls across services may cause backpressure in the system, resulting in high latency or cascading failures. Moreover, you generally don't know which node a particular container will run in. Containers placed on the same node may be competing for limited CPU or memory. 
 
-You can categorize these into metrics and text-based logs. 
+To make sense of what's happening, the application must emit telemetry events. You can categorize these into metrics and text-based logs. 
 
 *Metrics* are numerical values that can be analyzed. You can use them to observe the system in real time (or close to real time), or to analyze performance trends over time. Metrics include:
 
@@ -71,9 +71,9 @@ Handle batching and aggregation in the pipeline, not directly in the app code. P
 
 ## Distributed tracing
 
-As mentioned, one challenge in microservices is understanding the flow of events across services. A single operation or transaction may involve calls to multiple services. In order reconstruct the entire sequence of steps, each service should propagate a *correlation ID* that acts as a unique identifier for that operation. The correlation ID enables [distributed tracing](http://microservices.io/patterns/observability/distributed-tracing.html) across services.
+As mentioned, one challenge in microservices is understanding the flow of events across services. A single operation or transaction may involve calls to multiple services. To reconstruct the entire sequence of steps, each service should propagate a *correlation ID* that acts as a unique identifier for that operation. The correlation ID enables [distributed tracing](http://microservices.io/patterns/observability/distributed-tracing.html) across services.
 
-The first service that receives a client request should generates the correlation ID. If the service makes an HTTP call to another service, it puts the correlation ID in a request header. Similarly, if the service sends an asynchronous message, it puts the correlation ID into the message. Downstream services continue to propagate the correlation ID, so that it flows through the entire system. In addition, all code that writes application metrics or log events should include the correlation ID.
+The first service that receives a client request should generate the correlation ID. If the service makes an HTTP call to another service, it puts the correlation ID in a request header. Similarly, if the service sends an asynchronous message, it puts the correlation ID into the message. Downstream services continue to propagate the correlation ID, so that it flows through the entire system. In addition, all code that writes application metrics or log events should include the correlation ID.
 
 If errors or exceptions occur, the correlation ID lets you find the upstream or downstream calls that were part of the same operation. Correlation IDs also makes it possible to calculate metrics like end-to-end latency for a complete transaction, number of successful transactions per second, and percentage of failed transactions.
 

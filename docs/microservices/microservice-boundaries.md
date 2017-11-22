@@ -40,7 +40,7 @@ Recall that the development team had identified the following aggregates: Delive
 
 - Delivery and Package are obvious candidates for microservices. 
 
-- Drone and Account are interesting because they reside in external bounded contexts. The other bounded contexts are beyond the scope of this guidance, so we'll treat Done and Account as "placeholders" whose implementation is yet to be determined. One option is to call directly into those external contexts. Another option is to create Drone and Account microservices that mediate between bounded contexts, in order to expose APIs or data schemas that are more suited to the Shipping context. Here are some factors to consider in this situation:
+- Drone and Account are interesting because they reside in external bounded contexts. The other bounded contexts are beyond the scope of this guidance, so we'll treat Drone and Account as "placeholders" whose implementation is yet to be determined. One option is to call directly into those external contexts. Another option is to create Drone and Account microservices that mediate between bounded contexts, in order to expose APIs or data schemas that are more suited to the Shipping context. Here are some factors to consider in this situation:
 
     - What is the network overhead of calling directly into the other bounded context? 
     
