@@ -10,7 +10,7 @@ You can categorize these into metrics and text-based logs.
 
 *Metrics* are numerical values that can be analyzed. You can use them to observe the system in real time (or close to real time), or to analyze performance trends over time. Metrics include:
 
-- Node-level system metrics, such as CPU usage, memory usage, and so on.
+- Node-level system metrics, including CPU, memory, network, disk, and file system usage. System metrics help you to understand resource allocation for each node in the cluster, and troubleshoot outliers.
  
 - Kubernetes metrics. Because services run in containers, you need to collect metrics at the container level, not just at the VM level. In Kubernetes, cAdvisor (Container Advisor) is the agent that collects statistics about the CPU, memory, filesystem, and network resources used by each container. The kubelet daemon collects resource statistics from cAdvisor and exposes them through a REST API.
    

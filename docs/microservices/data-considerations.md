@@ -67,7 +67,9 @@ The Delivery History service has two main functions:
 
 These two use-cases have different requirements. The first must be optimized for performing data analysis on a large set of data, using a schema-on-read approach to accommodate a variety of data sources. Azure Data Lake Store is a good fit for this scenario. Data Lake Store is an Apache Hadoop file system compatible with Hadoop Distributed File System (HDFS), and is tuned for performance for data analytics scenarios. 
 
-For optimal performance , Microsoft recommends storing data in Data Lake Store in larger sized files (at least 256MB), and organizing time-series data into folders partitioned by date. For more information, see [Tuning Azure Data Lake Store for performance](/azure/data-lake-store/data-lake-store-performance-tuning-guidance). However, that structure is not optimal for looking up individual records by ID. Therefore, the Delivery History service also stores data in Cosmos DB for quicker lookup. Only the fields needed to query the status of a delivery are stored in Cosmos DB. Periodically, older history data can be purged from Cosmos DB. 
+We use [Event Hubs Capture](/azure/event-hubs/event-hubs-capture-overview) to deliver the streaming data from Event Hubs into Data Lake without writing any code. You can easily set up Event Hubs Capture using an Azure Resource Manager template.
+
+For optimal performance, Microsoft recommends storing data in Data Lake Store in larger sized files (at least 256MB), and organizing time-series data into folders partitioned by date. For more information, see [Tuning Azure Data Lake Store for performance](/azure/data-lake-store/data-lake-store-performance-tuning-guidance). However, that structure is not optimal for looking up individual records by ID. Therefore, the Delivery History service also stores data in Cosmos DB for quicker lookup. Only the fields needed to query the status of a delivery are stored in Cosmos DB. Periodically, older history data can be purged from Cosmos DB. 
 
 ### Package service
 
