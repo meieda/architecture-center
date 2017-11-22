@@ -33,7 +33,7 @@ Here are some things to think about when choosing how to implement an API.
 
     - RPC is more oriented around operations or commands. Because RPC interfaces look like local method calls, it may lead you to design overly chatty APIs. However, that doesn't mean RPC must be chatty. It just means you need to use care when designing the interface.
 
-- Does the serialization format require a fixed schema? If so, do you need to compile a schema file?
+- Does the serialization format require a fixed schema? If so, does it require compiling a schema definition file? In that case, you'll to incorporate this step into your build process.
 
 - Consider framework and language support. HTTP is supported in nearly every framework and language. gRPC, Avro, and Thrift all have libraries for C++, C#, Java, and Python. Thrift and gRPC also support Go. 
 
@@ -47,7 +47,7 @@ Here are some things to think about when choosing how to implement an API.
 
 - Do you need protocol translation? If you choose a protocol like gRPC, you may need a protocol translation layer between the public API and the back end. A [gateway](./gateway.md) can perform that function.
 
-Our baseline recommendation is to choose REST over API unless you need the performance benefits of a binary protocol. REST over HTTP requires no special libraries. It creates minimal coupling, because callers don't need a client stub to communicate with the service. There is rich toolset around REST and HTTP, for schema definition, testing, and monitoring. Finally, HTTP is compatible with browser clients, so you don't need a protocol translation layer between the client and the backend. 
+Our baseline recommendation is to choose REST over HTTP unless you need the performance benefits of a binary protocol. REST over HTTP requires no special libraries. It creates minimal coupling, because callers don't need a client stub to communicate with the service. There is rich ecosystems of tools to support schema definitions, testing, and monitoring of RESTful HTTP endpoints. Finally, HTTP is compatible with browser clients, so you don't need a protocol translation layer between the client and the backend. 
 
 However, if you choose REST over HTTP, you should do performance and load testing early in the development process, to validate whether it performs well enough for your scenario.
 
@@ -69,7 +69,7 @@ Here are some specific considerations to keep in mind.
 
 - For operations with side effects, consider making them idempotent and implementing them as PUT methods. That will enable safe retries and can improve resiliency. The chapters [Ingestion and workflow](./ingestion-workflow.md#idempotent-vs-non-idempotent-operations) and [Interservice communication](./interservice-communication.md) discuss this issue in more detail.
 
-- HTTP methods can have asynchronous semantics, where the method returns a response immediately, but the service carries out the operation asynchronously. The method should return an HTTP 202 response code in that case.
+- HTTP methods can have asynchronous semantics, where the method returns a response immediately, but the service carries out the operation asynchronously. In that case, the method should return an [HTTP 202](https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html) response code, which indicates the request was accepted for processing, but the processing is not yet completed.
 
 ## Mapping REST to DDD patterns
 
@@ -113,7 +113,7 @@ In this guidance, we focus less on OO coding principles, and put more emphasis o
 
 - Aggregates are addressable by ID. Aggregates correspond to resources, and the URL is the stable identifier.
 
-- Child entities can be reached at a unique URL. Following HATEOS principles, this can be conveyed through links in the representation of the parent entity.
+- Child entities can be reached at a unique URL. If you following [HATEOS](https://en.wikipedia.org/wiki/HATEOAS), this can be conveyed through links in the representation of the parent entity.
 
 - Value objects are updated by replacing the entire value through a PUT or PATCH request.
 

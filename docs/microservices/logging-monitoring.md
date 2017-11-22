@@ -14,7 +14,7 @@ You can categorize these into metrics and text-based logs.
  
 - Kubernetes metrics. Because services run in containers, you need to collect metrics at the container level, not just at the VM level. In Kubernetes, cAdvisor (Container Advisor) is the agent that collects statistics about the CPU, memory, filesystem, and network resources used by each container. The kubelet daemon collects resource statistics from cAdvisor and exposes them through a REST API.
    
-- Application metrics. This includes any metrics that relevant to understanding the behavior of a service. Examples include the number of queued inbound HTTP requests, request latency, message queue length, or number of transactions processed per second.
+- Application metrics. This includes any metrics that are relevant to understanding the behavior of a service. Examples include the number of queued inbound HTTP requests, request latency, message queue length, or number of transactions processed per second.
 
 - Dependent service metrics. Services inside the cluster may call external services that are outside the cluster, such as managed PaaS services. You can monitor Azure services by using [Azure Monitor](/azure/monitoring-and-diagnostics/monitoring-overview). Third-party services may or may not provide any metrics. If not, you'll have to rely on your own application metrics to track statistics for latency and error rate.
 
@@ -24,7 +24,7 @@ You can categorize these into metrics and text-based logs.
 
 The article [Monitoring and diagnostics](../best-practices/monitoring.md) describes general best practices for monitoring an application. Here are some particular things to think about in the context of a microservices architecture.
 
-**Configuration and management**. Is logging and monitoring performed by a managed service, or by services deployed in the cluster? [Application Insights][app-insights] is Microsoft's managed Application Performance Management (APM) service. It has the advantage of being easy to deploy and configure, and provides an end-to-end solution for telemetry, monitoring, and analysis. Another options is to collect and store telemetry inside the cluster. This approach can have performance and cost benefits, especially at high scale. For more discussion of these options, see the section [Technology Options][#technology-options], below.
+**Configuration and management**. Is logging and monitoring performed by a managed service, or by services deployed in the cluster? [Application Insights][app-insights] is Microsoft's managed Application Performance Management (APM) service. It has the advantage of being easy to deploy and configure, and provides an end-to-end solution for telemetry, monitoring, and analysis. Another options is to collect and store telemetry inside the cluster. This approach can have performance and cost benefits, especially at high scale. For more discussion of these options, see the section [Technology Options](#technology-options), below.
 
 **Ingestion rate**. What is the throughput at which the system can ingest telemetry events? What happens if that rate is exceeded? For example, the system may throttle clients, in which case telemetry data is lost, or it may downsample the data. Sometimes you can mitigate this problem by reducing the amount of data that you collect:
 
@@ -36,7 +36,7 @@ The article [Monitoring and diagnostics](../best-practices/monitoring.md) descri
 
 **Cost**. The cost of ingesting and storing telemetry data may be high, especially at high volumes. In some cases it could even exceed the cost of running the application. In that case, you may need to reduce the volume of telemetry by aggregating, downsampling, or batching the data, as described above. 
         
-**Data fidelity**. How accurate are the metrics? Averages can hide outliers, especially at scale. Also, if the sampling rate is too low, it can smooth out fluctuations in the data. It may appear that 
+**Data fidelity**. How accurate are the metrics? Averages can hide outliers, especially at scale. Also, if the sampling rate is too low, it can smooth out fluctuations in the data. It may appear that all requests have about the same end-to-end latency, when in fact a significant fraction of requests are taking much longer. 
 
 **Latency**. To enable real-time monitoring and alerts, telemetry data should be available quick. How "real-time" is the data that appears on the monitoring dashboard? A few seconds old? More than a minute?
 
@@ -97,7 +97,7 @@ Some considerations when implementing distributed tracing:
 
 ## Technology options
 
-**Application Insights** is a managed service in Azure that ingests and stores telemetry data, and provides tools for analyzing and searching the data. To use Application Insights, you install an instrumentation package in your application. This packages monitors the app and sends telemetry data to the Application Insights service. It can also pull telemetry data from the host environment. Application Insights provides built-in correlation and dependency tracking. It lets you track system metrics, application metrics, and Azure service metrics, all in one place.
+**Application Insights** is a managed service in Azure that ingests and stores telemetry data, and provides tools for analyzing and searching the data. To use Application Insights, you install an instrumentation package in your application. This package monitors the app and sends telemetry data to the Application Insights service. It can also pull telemetry data from the host environment. Application Insights provides built-in correlation and dependency tracking. It lets you track system metrics, application metrics, and Azure service metrics, all in one place.
 
 Be aware that Application Insights throttles if the data rate exceeds a maximum limit; for details, see [Application Insights limits](/azure/azure-subscription-service-limits#application-insights-limits). A single operation may generate several telemetry events, so if your application expects a high volume traffic, it is likely to get throttled. To mitigate this problem, you can perform sampling to reduce the telemetry traffic. The tradeoff is that your metrics will be less precise. For more information, see [Sampling in Application Insights](/azure/application-insights/app-insights-sampling). You can also reduce the data volume by pre-aggregating metrics &mdash; that is, calculating statistical values such as average and standard deviation, and sending those values instead of the raw telemetry. The following blog post describes an approach to using Application Insights at scale: [Azure Monitoring and Analytics at Scale](https://blogs.msdn.microsoft.com/azurecat/2017/05/11/azure-monitoring-and-analytics-at-scale/).
 

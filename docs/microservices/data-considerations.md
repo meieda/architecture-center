@@ -44,7 +44,7 @@ There is no single approach that's correct in all cases, but here are some gener
 
 Even with only a few services, the Shipping bounded context illustrates several of the points discussed in this section. 
 
-When a user schedules a new delivery, the client request includes information about the delivery (pickup and dropoff locations, delivery time) and the packages (size, weight). This information defines a unit of work, which the Ingestion service to Event Hubs. It's important that the unit of work stays in persistent storage while the Scheduler service is executing the workflow. For more discussion of the workflow, see [Ingestion and workflow](./ingestion-workflow.md). 
+When a user schedules a new delivery, the client request includes information about the delivery (pickup and dropoff locations, delivery time) and the packages (size, weight). This information defines a unit of work, which the Ingestion service sends to Event Hubs. It's important that the unit of work stays in persistent storage while the Scheduler service is executing the workflow. For more discussion of the workflow, see [Ingestion and workflow](./ingestion-workflow.md). 
 
 The various backend services care about different subsets of the information the request, and also have different read and write profiles. 
 
@@ -69,7 +69,7 @@ These two use-cases have different requirements. The first must be optimized for
 
 We use [Event Hubs Capture](/azure/event-hubs/event-hubs-capture-overview) to deliver the streaming data from Event Hubs into Data Lake without writing any code. You can easily set up Event Hubs Capture using an Azure Resource Manager template.
 
-For optimal performance, Microsoft recommends storing data in Data Lake Store in larger sized files (at least 256MB), and organizing time-series data into folders partitioned by date. For more information, see [Tuning Azure Data Lake Store for performance](/azure/data-lake-store/data-lake-store-performance-tuning-guidance). However, that structure is not optimal for looking up individual records by ID. Therefore, the Delivery History service also stores data in Cosmos DB for quicker lookup. Only the fields needed to query the status of a delivery are stored in Cosmos DB. Periodically, older history data can be purged from Cosmos DB. 
+For optimal performance, Microsoft recommends storing data in Data Lake Store in larger sized files (at least 256MB), and organizing time-series data into folders partitioned by date. For more information, see [Tuning Azure Data Lake Store for performance](/azure/data-lake-store/data-lake-store-performance-tuning-guidance). However, that structure is not optimal for looking up individual records by ID. Therefore, the Delivery History service also stores data in Cosmos DB for quicker lookup. Only the fields needed to query the status of a delivery are stored in Cosmos DB. Periodically, older history data can be purged from Cosmos DB by running an occasional batch process. 
 
 ### Package service
 

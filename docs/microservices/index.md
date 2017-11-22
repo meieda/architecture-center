@@ -45,7 +45,7 @@ These benefits don't come for free. This series of articles is designed to addre
 
 - **Complexity**. A microservices application has more moving parts. Each service is simple, but the services have to work together as a whole. A single user operation may involve multiple services. In the chapter [Ingestion and workflow](./ingestion-workflow.md), we examine some of the issues around ingesting requests at high throughput, coordinating a workflow, and handling failures. 
 
-- **Network congestion and latency**. The use of many small, granular services can result in more interservice communication and longer end-to-end latency. The chapter [Interservice communication](./interservice-communication.md) describes considerations for messaging between services. Both synchronous and asynchronous communication have a place in microservices architectures. For synchronous communication, good [API design](./api-design.md) is important so that services remain loosely coupled, and can be independently deployed and updated.
+- **Network congestion and latency**. The use of many small, granular services can result in more interservice communication and longer end-to-end latency. The chapter [Interservice communication](./interservice-communication.md) describes considerations for messaging between services. Both synchronous and asynchronous communication have a place in microservices architectures. Good [API design](./api-design.md) is important so that services remain loosely coupled, and can be independently deployed and updated.
  
 - **Communication between clients and the application.**  When you decompose an application into many small services, how should clients communicate with those services? Should a client call each individual service directly, or route requests through an [API Gateway](./gateway.md).
 
@@ -53,12 +53,12 @@ These benefits don't come for free. This series of articles is designed to addre
 
 - **Monitoring**. Monitoring a distributed application can be a lot harder than a monolithic application, because you must correlate telemetry from multiple services. The chapter [Logging and monitoring](./logging-monitoring.md) addresses these concerns.
 
-- **CI/CD**. One of the main goals of microservices is agility. You must have automated and robust [CI/CD](./ci-cd.md), so that you can quickly and reliably deploy individual services into test and production environments. 
+- **CI/CD**. One of the main goals of microservices is agility. To achieve this, you must have automated and robust [CI/CD](./ci-cd.md), so that you can quickly and reliably deploy individual services into test and production environments.
 
 - **Team structure**. Can you successfully organize into small, semi-independent teams? Do you have a strong DevOps culture? [Conway's law](https://en.wikipedia.org/wiki/Conway%27s_law) says that organizations create software that mirrors their organizational structure. If your team structure and processes still reflect a "monolithic app" worldview, it will be hard to achieve the agility that microservices promise. Team organization is not a topic that we explore deeply in this series, but it's something to consider before you embark on a microservices architecture.
 
 
-## The drone delivery scenario
+## The drone delivery application
 
 To explore these issues, and to illustrate some of the best practices for a microservices architecture, we created a reference implementation that we call the Drone Delivery application. 
 
@@ -69,7 +69,7 @@ This scenario involves a fairly complicated domain. Some of the business concern
 > [!NOTE]
 > For help in choosing between a microservices architecture and other architectural styles, see the [Azure Application Architecture Guide](../guide/index.md).
 
-Our reference implementation uses [Azure Container Service (ACS)](/azure/container-service/kubernetes/) with Kubernetes. However, many of the high-level architectural decisions and challenges will apply to any container orchestrator. 
+Our reference implementation uses Kubernetes with [Azure Container Service (ACS)](/azure/container-service/kubernetes/). However, many of the high-level architectural decisions and challenges will apply to any container orchestrator. 
 
 > [!div class="nextstepaction"]
 > [Domain analysis](./domain-analysis.md)

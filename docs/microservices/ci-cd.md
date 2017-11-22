@@ -46,7 +46,7 @@ With this approach, it's trivial to set up a new build environment. A developer 
 
 For local development and testing, use Docker to run the service inside a container. As part of this process, you may need to run other containers that have mock services or test databases needed for local testing. You could use Docker Compose to coordinate these containers, or use Minikube to run Kubernetes locally. 
 
-When the code is ready, open a PR and merge into master. This will start a job on build server:
+When the code is ready, open a pull request and merge into master. This will start a job on build server:
 
 1. Build the code assets. 
 2. Run unit tests against the code.
@@ -55,7 +55,7 @@ When the code is ready, open a PR and merge into master. This will start a job o
 5. Push the image to a container registry.
 6. Update the test cluster with the new image to run integration tests.
 
-When the image is ready to go into production, update the deployment files as needed to specify the latest image. This includes Kubernetes configuration files, Helm charts, and so on. Then apply the update to the production cluster.
+When the image is ready to go into production, update the deployment files as needed to specify the latest image, including any Kubernetes configuration files. Then apply the update to the production cluster.
 
 Here are some recommendations for making deployments more reliable:
  
