@@ -46,7 +46,7 @@ Even with only a few services, the Shipping bounded context illustrates several 
 
 When a user schedules a new delivery, the client request includes information about the delivery (pickup and dropoff locations, delivery time) and the packages (size, weight). This information defines a unit of work, which the Ingestion service sends to Event Hubs. It's important that the unit of work stays in persistent storage while the Scheduler service is executing the workflow. For more discussion of the workflow, see [Ingestion and workflow](./ingestion-workflow.md). 
 
-The various backend services care about different subsets of the information the request, and also have different read and write profiles. 
+The various backend services care about different portions of the information in the request, and also have different read and write profiles. 
 
 - The Delivery service stores information about every delivery that is currently scheduled or in progress. It listens for events from the drones, and tracks the status of deliveries that are in progress. It also sends domain events with delivery status updates.
 
@@ -56,7 +56,7 @@ The various backend services care about different subsets of the information the
 
 ### Delivery service
 
-It's expected that users will frequently check the status of a delivery while they are waiting for their package. Therefore, the Delivery service requires a data store that emphasizes throughput (read and write) over long-term storage. Also, the Delivery service does not perform any complex queries or analysis, it simply fetches the latest status for a given delivery. For these reasons, the Delivery service team chose Azure Redis Cache.
+It's expected that users will frequently check the status of a delivery while they are waiting for their package. Therefore, the Delivery service requires a data store that emphasizes throughput (read and write) over long-term storage. Also, the Delivery service does not perform any complex queries or analysis, it simply fetches the latest status for a given delivery. The information stored stored in Redis is relatively short-lived. Once a delivery is complete, the Package History service is the system of record. The Delivery service team chose Azure Redis Cache for its high read-write performance.
 
 ### Delivery History service
 
@@ -75,10 +75,11 @@ For optimal performance, Microsoft recommends storing data in Data Lake Store in
 
 Finally, the Package service has two basic requirements: 
 
-- High write throughput.
+- Able to handle a high volume of packages, requiring high write throughput.
 - Simple queries by package ID.
+- Long-term storage.
 
-The package data is not relational, so a documented oriented database is appropriate, and Cosmos DB can achieve very high throughput by using sharded collections. The team that works on the Package service is familiar with the MEAN stack (MongoDB, Express.js, AngularJS, and Node.js), so they select the [MongoDB API](/azure/cosmos-db/mongodb-introduction) for Cosmos DB. That lets them leverage their existing experience with MongoDB, while getting the benefits of Cosmos DB.
+The package data is not relational, so a document oriented database is appropriate, and Cosmos DB can achieve high throughput by using sharded collections. The team that works on the Package service is familiar with the MEAN stack (MongoDB, Express.js, AngularJS, and Node.js), so they select the [MongoDB API](/azure/cosmos-db/mongodb-introduction) for Cosmos DB. That lets them leverage their existing experience with MongoDB, while getting the benefits of Cosmos DB.
 
 > [!div class="nextstepaction"]
 > [Interservice communication](./interservice-communication.md)

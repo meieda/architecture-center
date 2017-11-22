@@ -8,15 +8,15 @@ Communication between microservices must be efficient and robust. With lots of s
 
 Here are some of the main challenges arising from service-to-service communication. Service meshes, described later in this chapter, are designed to handle many of these challenges.
 
-**Resiliency.** There may be dozens or even hundreds of instances of any given service. In Kubernetes, these instances are deployed as pods. The Kubernetes scheduler is in charge of assigning a node for each pod. Pods may be destroyed and recreated for any number of reasons. It might be a node-level failure, such as a hardware failure or a VM reboot. Or Kubernetes may *evict* a pod because of resource constraints on the node. A pod template may be updated, causing a restart. A container may crash. Two patterns can help make service-to-service network calls more resilient:
+**Resiliency.** There may be dozens or even hundreds of instances of any given service. In Kubernetes, these instances are deployed as pods. The Kubernetes scheduler is reponsible for assigning a node for each pod. Pods may be destroyed and recreated for any number of reasons. It might be a node-level failure, such as a hardware failure or a VM reboot. Or Kubernetes may *evict* a pod because of resource constraints on the node. A pod template may be updated, causing a restart. A container may crash. Two patterns can help make service-to-service network calls more resilient:
 
 - **[Retry](../patterns/retry.md)**. A network call may fail because of a transient fault that goes away by itself. Rather than fail outright, the caller should typically retry the operation a certain number of times, or until a configured time-out period elapses. However, if an operation is not idempotent, retries can cause unintended side effects. The original call might succeed, but the caller never gets a response. If the caller retries, the operation may be invoked twice. Generally, it's not safe to retry POST or PATCH methods, because these are not guaranteed to be idempotent.
 
 - **[Circuit Breaker](../patterns/circuit-breaker.md)**. Too many failed requests can cause a bottleneck, as pending requests accumulate in the queue. These blocked requests might hold critical system resources such as memory, threads, database connections, and so on, which can cause cascading failures. The Circuit Breaker pattern can prevent a service from repeatedly trying an operation that is likely to fail. 
 
-**Load balancing**. When service "A" calls service "B", the request must be directed to a particular instance of service "B". In Kubernetes, the `Service` resource type provides a stable IP address for a group of pods. Network traffic to the service's IP address gets forwarded to a pod by means of iptable rules. By default, a random pod is chosen. A service mesh (see below) can provide more intelligent load balancing algorithms based on observed latency or other metrics.
+**Load balancing**. When service "A" calls service "B", the request must reach a running instance of service "B". In Kubernetes, the `Service` resource type provides a stable IP address for a group of pods. Network traffic to the service's IP address gets forwarded to a pod by means of iptable rules. By default, a random pod is chosen. A service mesh (see below) can provide more intelligent load balancing algorithms based on observed latency or other metrics.
 
-**Distributed tracing**. A single transaction may span multiple services. That can make it hard to monitor the overall performance and health of the system. Every service can be generating logs and metrics, but if there's no way to tie them together, they are of limited use. The chapter [Logging and monitoring](./logging-monitoring.md) talks more about distribute tracing, but we mention it here as a challenge.
+**Distributed tracing**. A single transaction may span multiple services. That can make it hard to monitor the overall performance and health of the system. Every service can be generating logs and metrics, but if there's no way to tie them together, they are of limited use. The chapter [Logging and monitoring](./logging-monitoring.md) talks more about distributed tracing, but we mention it here as a challenge.
 
 **Service versioning**. When a team deploys a new version of a service, they must avoid breaking any other services or external clients that depend on it. In addition, you might want to run multiple versions of a service side-by-side, and route requests to a particular version. 
 
@@ -38,7 +38,7 @@ There are tradeoffs to each pattern. Request/response is a well-understood parad
 
 - **Multiple subscribers**. Using a pub/sub model, multiple consumers can subscribe to receive events. See [Event-driven architecture style](/azure/architecture/guide/architecture-styles/event-driven).
 
-- **Failure isolation**. If the consumer goes down, the sender can still continue to send messages. The messages will be picked up when the consumer recovers. This ability is especially useful in a microservices architecture, because each service has its own lifecycle. A service could become unavailable or be replaced with a newer version at any given time. Asynchronous messaging can handle intermittent downtime. Synchronous APIs, on the other hand, require the downstream service to be available or the operation fails. 
+- **Failure isolation**. If the consumer goes down, the sender can still send messages. The messages will be picked up when the consumer recovers. This ability is especially useful in a microservices architecture, because each service has its own lifecycle. A service could become unavailable or be replaced with a newer version at any given time. Asynchronous messaging can handle intermittent downtime. Synchronous APIs, on the other hand, require the downstream service to be available or the operation fails. 
  
 - **Asynchronous operations**. The message sender does not have to wait for the consumer to respond. This is especially useful in a microservices architecture. If there is a chain of service dependencies (service A calls B, which calls C, and so on), waiting on synchronous calls can add unacceptable amounts of latency.
 
@@ -50,7 +50,7 @@ However, there are also some challenges to using asynchronous messaging effectiv
 
 - **Coupling with the messaging infrastructure**. Using a particular messaging infrastructure may cause tight coupling with that infrastructure. It will be difficult to switch to another messaging infrastructure later.
 
-- **Latency**. End-to-end latency may be higher, because messages may sit in a queue before being processed.  
+- **Latency**. End-to-end latency may be higher.  
 
 - **Cost**. The messaging infrastructure incurs additional cost. At high throughputs, the cost could become significant.
 

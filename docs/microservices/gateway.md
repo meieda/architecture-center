@@ -17,7 +17,7 @@ In a microservices architecture, how should a client communicate with the variou
 - Services must expose a client-friendly protocol such as HTTP or WebSocket. This limits the choice of [communication protocols](./interservice-communication.md). 
 - Services with public endpoints are a potential attack surface, and must be hardened.
 
-To address these problems, an API gateway sits between the clients and the backend services. A gateway can perform a number of different functions. Depending on your scenario, you may not need all of them. These functions can be grouped into the following patterns:
+To address these problems, an API gateway sits between the clients and the backend services. A gateway can perform a number of functions. Depending on your scenario, you may not need all of them. These functions can be grouped into the following patterns:
 
 [Gateway Routing](../patterns/gateway-routing.md). Use the gateway as a reverse proxy to route requests to one or more backend services, using layer 7 routing. The gateway provides a single endpoint for clients, and helps to decouple clients from services. 
 
@@ -53,7 +53,7 @@ When choosing a gateway technology, consider the following:
 
 **Features**. The options listed above all support layer 7 routing, but support for other features will vary. 
 
-**Deployment**. Azure Application Gateway and API Management are managed services. Nginx and HAProxy will typically run in containers inside the cluster, but can also be deployed to dedicated VMs outside of the cluster. 
+**Deployment**. Azure Application Gateway and API Management are managed services. Nginx and HAProxy will typically run in containers inside the cluster, but can also be deployed to dedicated VMs outside of the cluster. This isolates the gateway from the rest of the workload, but incurs higher management overhead.
 
 **Management**. When services are updated or new services are added, the gateway routing rules may need to be updated. Consider how this process will be managed. Similar considerations apply to managing SSL certificates, IP whitelists, and other aspects of configuration.
 

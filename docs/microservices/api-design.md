@@ -37,7 +37,7 @@ Here are some things to think about when choosing how to implement an API.
 
 - Consider framework and language support. HTTP is supported in nearly every framework and language. gRPC, Avro, and Thrift all have libraries for C++, C#, Java, and Python. Thrift and gRPC also support Go. 
 
-- Look at the available tooling for generating client code, serializer code, and API documentation. For REST APIs, consider using OpenAPI (Swagger) to create API definitions. 
+- Look at the available tooling for generating client code, serialization code, and API documentation. For REST APIs, consider using OpenAPI (Swagger) to create API definitions. 
 
 - Efficiency in terms of speed, memory, and payload size. Typically a gRPC-based interface is faster than REST over HTTP.
  
@@ -113,7 +113,7 @@ In this guidance, we focus less on OO coding principles, and put more emphasis o
 
 - Aggregates are addressable by ID. Aggregates correspond to resources, and the URL is the stable identifier.
 
-- Child entities can be reached at a unique URL. If you following [HATEOS](https://en.wikipedia.org/wiki/HATEOAS), this can be conveyed through links in the representation of the parent entity.
+- Child entities can be reached at a unique URL. If you following [HATEOAS](https://en.wikipedia.org/wiki/HATEOAS), this can be conveyed through links in the representation of the parent entity.
 
 - Value objects are updated by replacing the entire value through a PUT or PATCH request.
 

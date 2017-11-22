@@ -46,7 +46,7 @@ With this approach, it's trivial to set up a new build environment. A developer 
 
 For local development and testing, use Docker to run the service inside a container. As part of this process, you may need to run other containers that have mock services or test databases needed for local testing. You could use Docker Compose to coordinate these containers, or use Minikube to run Kubernetes locally. 
 
-When the code is ready, open a pull request and merge into master. This will start a job on build server:
+When the code is ready, open a pull request and merge into master. This will start a job on the build server:
 
 1. Build the code assets. 
 2. Run unit tests against the code.
@@ -79,7 +79,7 @@ One challenge of rolling updates is that during the update process, a mix of old
 
 ### Blue-green deployment
 
-In a blue-green deployment, you deploy the new version alongside the previous version. After you validate the new version, you switch all traffic at once from the previous version to the new version. After the switch, you monitor the application for any problems. If there something goes wrong, you can swap back to the old version. Assuming there are no problems, you can delete the old version.
+In a blue-green deployment, you deploy the new version alongside the previous version. After you validate the new version, you switch all traffic at once from the previous version to the new version. After the switch, you monitor the application for any problems. If something goes wrong, you can swap back to the old version. Assuming there are no problems, you can delete the old version.
 
 With a more traditional monolithic or N-tier application, blue-green deployment generally meant provisioning two identical environments. You would deploy the new version to a staging environment, then redirect client traffic to the staging environment &mdash; for example, by swapping VIP addresses.
 

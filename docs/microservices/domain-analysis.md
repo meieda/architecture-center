@@ -42,11 +42,11 @@ After an initial domain analysis, the team came up with the following rough sket
 ![](./images/ddd1.svg) 
 
 - **Shipping** is placed in the center of the diagram, because it's core to the business. Everything else in the diagram exists to enable this functionality.
-- **Drone management** is also core to the business. Functionality that is closely related to drone management include **repairing drones** and using **predictive analysis** to predict when drones need servicing and maintenance. 
+- **Drone management** is also core to the business. Functionality that is closely related to drone management include **drone repair** and using **predictive analysis** to predict when drones need servicing and maintenance. 
 - **ETA analysis** provides time estimates for pickup and delivery. **Third-party transportation** will enable the application to schedule alternative transportation methods if the delivery cannot be made entirely via drone.
 - **Drone sharing** is a possible extension of the core business. The company may have excess drone capacity during certain hours, and could rent out drones that would otherwise be idle. This feature will not be in v1 of the application.
-- Similarly, **video surveillance** is another area that the company might expand into later.
-- Support services include **user accounts**, **Call center**, and others.
+- **Video surveillance** is another area that the company might expand into later.
+- **User accounts**, **Invoicing**, and **Call center** are subdomains that support the core business.
  
 Notice that at this point in the process, we haven't made any decisions about implementation or technologies. Some of the subsystems may involve external software systems or third-party services. Even so, the application needs to interact with these systems and services, so it's important they are part of the domain model. 
 
@@ -67,7 +67,7 @@ This is where the DDD concept of *bounded contexts* comes into play. A bounded c
  
 Bounded contexts are not necessarily isolated from one another. The solid lines that connect the bounded contexts represent the places where two bounded contexts interact. For example, Shipping depends on User Accounts to get information about customers, and depends on Drone Management to schedule drones from the fleet.
 
-In the book *Domain Driven Design* (Addison-Wesley, 2003), Eric Evans describes several patterns for maintaining the integrity of a domain model when it interacts with another bounded context. One of the main principles of microservices is that services communicate through well-defined APIs. This approach corresponds to two patterns that Evans calls Open Host Service and Published Language. The idea of Open Host Service is that a subsystem defines a formal protocol (API) that other subsystems use to communicate with it. Published Language extends this idea by publishing the API in a form that other teams can use to write clients. When we start designing our actual microservices, they will expose RESTful APIs that are described using the [OpenAPI Specification](https://www.openapis.org/specification/repo). This specification defines a language-agnostic interface description for REST APIs, expressed in JSON or YAML format.
+In the book *Domain Driven Design* (Addison-Wesley, 2003), Eric Evans describes several patterns for maintaining the integrity of a domain model when it interacts with another bounded context. One of the main principles of microservices is that services communicate through well-defined APIs. This approach corresponds to two patterns that Evans calls Open Host Service and Published Language. The idea of Open Host Service is that a subsystem defines a formal protocol (API) that other subsystems use to communicate with it. Published Language extends this idea by publishing the API in a form that other teams can use to write clients. When we start designing our actual microservices, they will expose RESTful APIs that are described using the [OpenAPI Specification](https://www.openapis.org/specification/repo). OpenAPI (formerly known as Swagger) defines a language-agnostic interface description for REST APIs, expressed in JSON or YAML format.
 
 For the rest of this journey, we will focus on the Shipping bounded context. 
 
@@ -92,7 +92,7 @@ If you are already familiar with DDD, you can skip this section. The patterns ar
 
 The purpose of an aggregate is to model transactional invariants. Things in the real world have complex webs of relationships. Customers create orders, orders contain products, products have suppliers, and so on. If the application modifies several related objects, how does it guarantee consistency? How do we keep track of invariants and enforce them?  
 
-Traditional applications have often used database transactions to enforce consistency. In a distributed application, however, that's often not be feasible. A single business transaction may span multiple data stores, or may be long running, or may involve third-party services. Ultimately it's up to the application, not the data layer, to enforce the invariants required for the domain. 
+Traditional applications have often used database transactions to enforce consistency. In a distributed application, however, that's often not feasible. A single business transaction may span multiple data stores, or may be long running, or may involve third-party services. Ultimately it's up to the application, not the data layer, to enforce the invariants required for the domain. 
 
 > [!NOTE]
 > An aggregate doesn't *need* to have child entities, and it's actually common for an aggregate to consist of a single entity. Even so, the distinction between aggregates and entities is important. An aggregate enforces transactional semantics, while an entity might not.
@@ -112,15 +112,15 @@ There are a few other DDD patterns not listed here, including factories, reposit
 
 We start with the scenarios that the Shipping bounded context must handle.
 
-- A business (the sender) can schedule a drone to deliver a package to a customer (the receiver). Alternatively, a user can request a drone to pick up goods from a business that is registered with the drone delivery service. 
+- A business (the sender) can schedule a drone to deliver a package to a customer (the receiver). Or a customer can request a drone to pick up goods from a business that is registered with the drone delivery service.
 - The sender generates a tag (barcode or RFID) to put on the package. 
 - A drone will pick up and deliver a package from the source location to the destination location.
 - When a user schedules a delivery, the system provides an ETA based on route information, weather conditions, historical data, and so forth. 
 - When the drone is in flight, the sender and the receiver can track the current location and the latest ETA. 
 - Until a drone has picked up the package, the user can cancel a delivery.
 - When the delivery is complete, the sender and the receiver are notified.
-- The sender can request delivery confirmation from the user, in the form of a signature or finger print.
-- A user can look up the history of a completed delivery.
+- The sender can request delivery confirmation from the customer, in the form of a signature or finger print.
+- Users can look up the history of a completed delivery.
 
 From these scenarios, the development team identified the following **entities**.
 
@@ -132,7 +132,7 @@ From these scenarios, the development team identified the following **entities**
 - Notification
 - Tag
 
-Of these, Delivery, Package, Drone, and Account are **aggregates**. Tag, Confirmation, and Notification are associated with Delivery entities. The **value objects** in this design include Location, ETA, PackageWeight, and PackageSize. 
+Delivery, Package, Drone, and Account are **aggregates**. Confirmations and Notifications are associated with Delivery entities, and Tags are associated with Packages. The **value objects** in this design include Location, ETA, PackageWeight, and PackageSize. 
 
 To illustrate, here is a UML diagram of the Delivery aggregate. Notice that it holds references to other aggregates, including Account, Package, and Drone.
 

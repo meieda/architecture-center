@@ -52,7 +52,7 @@ Recall that the development team had identified the following aggregates: Delive
      
 - The Scheduler and Supervisor are domain services that coordinate the activities performed by other microservices. It makes sense to factor these into their own microservices.  
 
-So far, we've haven't considered any non-functional requirements. Thinking about the application's throughput requirements, the development team decides to create a separate Ingestion microservice that is responsible for ingesting client requests. This microservice will implement [load leveling](../patterns/queue-based-load-leveling.md) by putting incoming requests into a buffer for processing. The Scheduler will read the requests from the buffer and execute the workflow.
+So far, we haven't considered any non-functional requirements. Thinking about the application's throughput requirements, the development team decides to create a separate Ingestion microservice that is responsible for ingesting client requests. This microservice will implement [load leveling](../patterns/queue-based-load-leveling.md) by putting incoming requests into a buffer for processing. The Scheduler will read the requests from the buffer and execute the workflow.
 
 The following diagram shows the design at this point:
  
@@ -60,12 +60,12 @@ The following diagram shows the design at this point:
 
 ## Choosing a compute option
 
-The term *compute* refers to the hosting model for the computing resources that your application runs on. For a microservices architecture, there are two main options that you should consider:
+The term *compute* refers to the hosting model for the computing resources that your application runs on. For a microservices architecture, two approaches are especially popular:
 
 - A service orchestrator that manages services running on dedicated nodes (VMs).
 - A serverless architecture using functions as a service (FaaS). 
 
-While these aren't the only options, they are both proven approaches to building microservices. A solution might include both elements. 
+While these aren't the only options, they are both proven approaches to building microservices. A solution might include both elements.
 
 ### Service orchestrators
 
