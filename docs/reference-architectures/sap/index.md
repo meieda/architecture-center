@@ -77,7 +77,7 @@ For the backup data store, we recommend using the [cool storage tier][cool-blob-
 
 At the SAP application layer, Azure offers a wide range of virtual machine sizes for scaling up. For an inclusive list, see [SAP note 1928533 - SAP Applications on Azure: Supported Products and Azure VM Types][sap-1928533]. Scale out by adding more VMs to the availability set.
 
-For SAP HANA on Azure virtual machines with both OLTP and OLAP SAP applications, the SAP-certified virtual machine size is GS5 with a single VM instance. For larger workloads, Microsoft also offers [Azure Large Instances][azure-large-instances] for SAP HANA on physical servers co-located in a Microsoft Azure certified datacenter, which provides up to 4 TB of memory capacity for a single instance at this time. Multi-node configuration is also possible with a total memory capacity of up to 32 TB.
+For SAP HANA on Azure virtual machines with both OLTP and OLAP SAP applications, the SAP-certified virtual machine size is GS5 with a single VM instance. For larger workloads, Microsoft also offers [Azure Large Instances][azure-large-instances] for SAP HANA on physical servers co-located in a Microsoft Azure certified datacenter, which provides up to 20 TB of memory capacity for a single instance at this time. Multi-node configuration is also possible with a total memory capacity of up to 60 TB.
 
 ## Availability considerations
 
